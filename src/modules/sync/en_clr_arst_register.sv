@@ -10,10 +10,10 @@ module en_clr_arst_register #(
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             q <= '0; // Reset the register to zero on reset
-        end else if (en && !clr) begin
-            q <= d; // Load data into the register on clock edge if enabled
         end else if (clr) begin
             q <= '0; // Clear the register if clr is asserted
+        end else if (en) begin
+            q <= 'd; // Load the data into the register if enable is asserted
         end
     end
 

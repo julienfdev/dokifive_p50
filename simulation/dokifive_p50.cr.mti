@@ -17,16 +17,26 @@ Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
 Top level modules:
 	tb_imm_extender
 
-} {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/packages/types.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/packages/types.sv
+} {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/comb/alu.sv {2 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/comb/alu.sv
 Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
--- Compiling package types
+** Warning: C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/comb/alu.sv(1): (vlog-13233) Design unit "alu_sv_unit" already exists and will be overwritten. Overwriting SystemVerilog $unit with different source files.
+-- Compiling package alu_sv_unit
+-- Importing package types
+-- Compiling module alu
 
 Top level modules:
-	--none--
+	alu
 
 } {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/packages/signals.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/packages/signals.sv
 Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
 -- Compiling package signals
+
+Top level modules:
+	--none--
+
+} {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/packages/types.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/packages/types.sv
+Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
+-- Compiling package types
 
 Top level modules:
 	--none--

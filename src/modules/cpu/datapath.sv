@@ -4,11 +4,13 @@ module datapath(
     output logic [31:0] pc_fnext, // it's fed before the clock edge to the memory controller because the memory is registered
     output logic [31:0] instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
 
-    // Control signals
-    // Fetch signals
+    // Stalls
     input logic stall_f, // stall fetch stage, should be propagated to the instruction memory controller
+    input logic stall_d,
+    // Flushes
+    input logic flush_d,
 
-    // Execute signals
+    // Control signals
     input logic pc_src_e // PC source for branch/jump
 
     // Control signals
@@ -17,6 +19,7 @@ module datapath(
     // FETCH
     logic [31:0] pc_f, pc_plus_4_f;
     // DECODE
+    logic [31:0] pc_d, pc_plus_4_d;
     // EXECUTE
     logic [31:0] pc_target_e;
     // MEMORY
@@ -45,6 +48,18 @@ module datapath(
     assign pc_plus_4_f = pc_f + 4; // PC + 4
 
     // FETCH_DECODE REGISTER
+    f_d_register f_d_register_instance (
+        .clk(clk),
+        .rst(rst),
+        .en(~stall_d), // enable the register only if not stalled
+        .clr(flush_d),
+        .instr_f(instr_f),
+        .pc_f(pc_f),
+        .pc_plus_4_f(pc_plus_4_f),
+        .instr_d(instr_d),
+        .pc_d(pc_d),
+        .pc_plus_4_d(pc_plus_4_d)
+    );
 
     // DECODE STAGE
 

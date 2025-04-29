@@ -2,6 +2,7 @@ module datapath(
     input logic clk, rst,
     input logic [31:0] instr_f, // instruction fetched from memory
     output logic [31:0] pc_fnext, // it's fed before the clock edge to the memory controller because the memory is registered
+    output logic [31:0] instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
 
     // Control signals
     // Fetch signals
@@ -31,14 +32,15 @@ module datapath(
         .b(pc_target_e),
         .out(pc_fnext)
     );
-    enabled_register_async_reset #(
-        .WIDTH(32)
+    en_clr_arst_register #(
+    .WIDTH(32)
     ) pc_register (
         .d(pc_fnext),
         .q(pc_f),
         .clk(clk),
         .rst(rst),
-        .enable(~stall_f) // enable the register only if not stalled
+        .en(~stall_f), // enable the register only if not stalled
+        .clr(1'b0) // no clear signal for the PC register
     );
     assign pc_plus_4_f = pc_f + 4; // PC + 4
 

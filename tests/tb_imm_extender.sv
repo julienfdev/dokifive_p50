@@ -11,7 +11,7 @@ module tb_imm_extender();
     // Instantiate the Unit Under Test (UUT)
     imm_extender uut (
         .immsrc(immsrc),
-        .instr(instr[31:7]),
+        .instr_31_7(instr[31:7]),
         .imm_ext(imm_ext)
     );
 

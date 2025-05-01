@@ -20,7 +20,7 @@ module cpu(
     immsrc_t immsrc_d; // immediate source for the decode stage
     // execute
     pc_src_t pc_src_e;
-    alu_src_b_sig_t alu_src_b_e_sig; // ALU source, used to switch between the second operand and the immediate value
+    alu_src_b_sig_t alu_src_b_sig_e; // ALU source, used to switch between the second operand and the immediate value
     alu_op_t alu_op; // ALU operation, used to select the operation to be performed by the ALU
     // writeback
     bool_t reg_write_w; // register write signal, used to control the register file
@@ -55,7 +55,7 @@ module cpu(
         .flush_e(flush_e),
         .immsrc_d(immsrc_d),
         .pc_src_e(pc_src_e),
-        .alu_src_b_e_sig(alu_src_b_e_sig),
+        .alu_src_b_sig_e(alu_src_b_sig_e),
         .alu_op(alu_op),
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w)
@@ -74,7 +74,7 @@ module cpu(
         .zero_e(zero_e),
         .immsrc_d(immsrc_d),
         .pc_src_e(pc_src_e),
-        .alu_src_b_e_sig(alu_src_b_e_sig),
+        .alu_src_b_sig_e(alu_src_b_sig_e),
         .alu_op_e(alu_op),
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w),

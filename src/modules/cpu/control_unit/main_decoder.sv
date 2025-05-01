@@ -3,7 +3,7 @@ import types::*;
 module main_decoder(
     input logic [6:0] opcode,
 
-    output logic reg_write,
+    output bool_t reg_write,
     output result_src_t result_src,
     output logic mem_write,
     output logic jump,

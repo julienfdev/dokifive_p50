@@ -31,7 +31,7 @@ module datapath(
     input immsrc_t immsrc_d,
     // execute
     input pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
-    input alu_src_b_sig_t alu_src_b_e_sig, // ALU source, used to switch between the second operand and the immediate value
+    input alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
     input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
     // writeback
     input bool_t reg_write_w,
@@ -154,7 +154,7 @@ module datapath(
     mux2 #(
     .WIDTH(32)
     ) alu_src_b_mux (
-        .s(alu_src_b_e_sig),
+        .s(alu_src_b_sig_e),
         .a(rd2_e),
         .b(imm_ext_e),
         .out(alu_src_b_e)

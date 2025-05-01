@@ -4,13 +4,15 @@ module control_d_e_register(
     input logic clk, rst, en, clr,
 
     // Decode inputs
-    input logic reg_write_d, mem_write_d, jump_d, branch_d,
+    input bool_t reg_write_d,
+    input logic mem_write_d, jump_d, branch_d,
     input result_src_t result_src_d,
     input alu_op_t alu_op_d,
     input alu_src_b_sig_t alu_src_b_sig_d,
 
     // Execute outputs
-    output logic reg_write_e, mem_write_e, jump_e, branch_e,
+    output bool_t reg_write_e,
+    output logic mem_write_e, jump_e, branch_e,
     output result_src_t result_src_e,
     output alu_op_t alu_op_e,
     output alu_src_b_sig_t alu_src_b_sig_e
@@ -18,7 +20,7 @@ module control_d_e_register(
 );
 
 en_clr_arst_register #(
-    .WIDTH(logic)
+    .WIDTH(bool_t)
 ) en_clr_arst_register_instance (
     .d(reg_write_d),
     .q(reg_write_e),

@@ -7,7 +7,7 @@ module control_unit(
 
     output immsrc_t immsrc_d, // Immediate source for the decode stage
     output pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
-    output alu_src_b_sig_t alu_src_b_e_sig, // ALU source, used to switch between the second operand and the immediate value
+    output alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
     output alu_op_t alu_op_e, // ALU operation, used to select the operation to be performed by the ALU
     output bool_t reg_write_w, // Register write signal, used to control the register file
     output result_src_t result_src_w, // Result source, used to select the source of the data to be written back to the register file
@@ -26,7 +26,7 @@ assign funct7_5_d = instr_d[30]; // Function 7, bit 5 from the instruction
 
 // Signals
 // Decode
-logic reg_write_d;
+bool_t reg_write_d;
 result_src_t result_src_d;
 logic mem_write_d;
 logic jump_d;
@@ -35,6 +35,17 @@ alu_op_t alu_op_d;
 alu_src_b_sig_t alu_src_b_sig_d;
 
 // Execute
+bool_t reg_write_e;
+result_src_t result_src_e;
+logic mem_write_e;
+logic jump_e;
+logic branch_e;
+
+// Memory
+bool_t reg_write_m;
+result_src_t result_src_m;
+
+
 // Memory
 // Writeback
 
@@ -60,11 +71,56 @@ alu_decoder alu_decoder_instance (
 );
 
 // DECODE_EXECUTE REGISTER
+control_d_e_register control_d_e_register_instance (
+    .clk(clk),
+    .rst(rst),
+    .en(~stall_e),
+    .clr(flush_e),
+    .reg_write_d(reg_write_d),
+    .mem_write_d(mem_write_d),
+    .jump_d(jump_d),
+    .branch_d(branch_d),
+    .result_src_d(result_src_d),
+    .alu_op_d(alu_op_d),
+    .alu_src_b_sig_d(alu_src_b_sig_d),
+    .reg_write_e(reg_write_e),
+    .mem_write_e(mem_write_e),
+    .jump_e(jump_e),
+    .branch_e(branch_e),
+    .result_src_e(result_src_e),
+    .alu_op_e(alu_op_e),
+    .alu_src_b_sig_e(alu_src_b_sig_e)
+);
 
 // EXECUTE STAGE
+// We need to assign PCSrcE
+assign pc_src_e = (branch_e & zero_e) | jump_e ? PC_SRC_PC_TARGET : PC_SRC_PC_PLUS_4; // PC source for branch/jump instructions
 
-// MEMORY STAGE
+// EXECUTE_MEMORY REGISTER
+control_e_m_register control_e_m_register_instance (
+    .clk(clk),
+    .rst(rst),
+    .en(~stall_m),
+    .clr(1'b0), // No clear signal for the memory stage
+    .reg_write_e(reg_write_e),
+    .mem_write_e(mem_write_e),
+    .result_src_e(result_src_e),
+    .reg_write_m(reg_write_m),
+    .mem_write_m(mem_write_m),
+    .result_src_m(result_src_m)
+);
 
-// WRITEBACK STAGE
+
+// MEMORY_WRITEBACK REGISTER
+control_m_w_register control_m_w_register_instance (
+    .clk(clk),
+    .rst(rst),
+    .en(~stall_wb),
+    .clr(1'b0), // No clear signal for the writeback stage
+    .reg_write_m(reg_write_m),
+    .result_src_m(result_src_m),
+    .reg_write_w(reg_write_w),
+    .result_src_w(result_src_w)
+);
     
 endmodule

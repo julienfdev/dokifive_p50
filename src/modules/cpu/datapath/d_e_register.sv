@@ -10,7 +10,7 @@ module d_e_register(
 
     // DECODE_EXECUTE REGISTER
     en_clr_arst_register #(
-        .WIDTH(32)
+        .WIDTH(logic [31:0])
     ) rd1_d_e (
         .d(rd1_d),
         .q(rd1_e),
@@ -21,7 +21,7 @@ module d_e_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(32)
+        .WIDTH(logic [31:0])
     ) rd2_d_e (
         .d(rd2_d),
         .q(rd2_e),
@@ -32,7 +32,7 @@ module d_e_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(32)
+        .WIDTH(logic [31:0])
     ) imm_ext_d_e (
         .d(imm_ext_d),
         .q(imm_ext_e),
@@ -43,7 +43,7 @@ module d_e_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(32)
+        .WIDTH(logic [31:0])
     ) pc_d_e (
         .d(pc_d),
         .q(pc_e),
@@ -54,7 +54,7 @@ module d_e_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(32)
+        .WIDTH(logic [31:0])
     ) pc_plus_4_d_e (
         .d(pc_plus_4_d),
         .q(pc_plus_4_e),
@@ -65,7 +65,7 @@ module d_e_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(5)
+        .WIDTH(logic [4:0])
     ) ra1_d_e (
         .d(ra1_d),
         .q(ra1_e),
@@ -76,7 +76,7 @@ module d_e_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(5)
+        .WIDTH(logic [4:0])
     ) ra2_d_e (
         .d(ra2_d),
         .q(ra2_e),
@@ -87,7 +87,7 @@ module d_e_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(5)
+        .WIDTH(logic [4:0])
     ) wa3_d_e (
         .d(wa3_d),
         .q(wa3_e),

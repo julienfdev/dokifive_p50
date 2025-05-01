@@ -1,8 +1,8 @@
 module en_clr_arst_register #(
-    parameter WIDTH = 32 // Default width of the register
+    parameter type WIDTH = logic [31:0] // Default width of the register
 ) (
-    input logic [WIDTH-1:0] d, // Data input
-    output logic [WIDTH-1:0] q, // Data output
+    input WIDTH d, // Data input
+    output WIDTH q, // Data output
     input logic clk, rst, en, clr // Clock, reset, and enable signals
 );
 
@@ -13,7 +13,7 @@ module en_clr_arst_register #(
         end else if (clr) begin
             q <= '0; // Clear the register if clr is asserted
         end else if (en) begin
-            q <= 'd; // Load the data into the register if enable is asserted
+            q <= d; // Load the data into the register if enable is asserted
         end
     end
 

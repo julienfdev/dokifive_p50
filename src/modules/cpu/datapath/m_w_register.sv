@@ -11,7 +11,7 @@ module m_w_register(
 
     // MEMORY_WRITEBACK REGISTER
     en_clr_arst_register #(
-        .WIDTH(32)
+        .WIDTH(logic [31:0])
     ) alu_result_m_w (
         .d(alu_result_m),
         .q(alu_result_w),
@@ -22,7 +22,7 @@ module m_w_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(32)
+        .WIDTH(logic [31:0])
     ) r_data_m_w (
         .d(r_data_m),
         .q(r_data_w),
@@ -33,7 +33,7 @@ module m_w_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(32)
+        .WIDTH(logic [31:0])
     ) pc_plus_4_m_w (
         .d(pc_plus_4_m),
         .q(pc_plus_4_w),
@@ -44,7 +44,7 @@ module m_w_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(5)
+        .WIDTH(logic [4:0])
     ) wa3_m_w (
         .d(wa3_m),
         .q(wa3_w),

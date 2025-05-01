@@ -75,9 +75,9 @@ module cpu(
         .immsrc_d(immsrc_d),
         .pc_src_e(pc_src_e),
         .alu_src_b_e_sig(alu_src_b_e_sig),
-        .alu_op(alu_op),
+        .alu_op_e(alu_op),
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w),
-        .mem_write(mem_write)
+        .mem_write_m(mem_write)
     );
 endmodule

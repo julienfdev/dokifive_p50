@@ -71,7 +71,7 @@ module datapath(
         .out(pc_fnext)
     );
     en_clr_arst_register #(
-    .WIDTH(32)
+    .WIDTH(logic [31:0])
     ) pc_register (
         .d(pc_fnext),
         .q(pc_f),

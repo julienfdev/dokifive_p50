@@ -3,20 +3,30 @@ import types::*;
 module datapath(
     input logic clk, rst,
     input logic [31:0] instr_f, // instruction fetched from memory
-    output logic [31:0] pc_fnext, // it's fed before the clock edge to the memory controller because the memory is registered
-    output logic [31:0] instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
 
+    // OUTPUTS
+    // Fetch stage
+    output logic [31:0] pc_fnext, // it's fed before the clock edge to the memory controller because the memory is registered
+    // Decode stage
+    output logic [31:0] instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
+    // Execute stage
+    output logic zero_e, // zero flag from the ALU, used for branch/jump instructions
+
+    // Hazard Unit signals
     // Stalls
-    input logic stall_f, // stall fetch stage, should be propagated to the instruction memory controller
-    input logic stall_d,
+    input logic stall_f, // stalls, the fetch stall should also be propagated to the instruction memory controller
+    input logic stall_d, stall_e, stall_m, stall_wb, // stalls for decode, execute, memory and writeback stages respectively, 
     // Flushes
     input logic flush_d,
+    input logic flush_e,
 
-    // Control signals
+    // Control Unit signals
     // decode
     input immsrc_t immsrc_d,
     // execute
     input logic pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
+    input logic alu_src_e, // ALU source, used to switch between the second operand and the immediate value
+    input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
     // writeback
     input logic reg_write_w
     // Control signals
@@ -26,10 +36,14 @@ module datapath(
     logic [31:0] pc_f, pc_plus_4_f;
     // DECODE
     logic [31:0] rd1_d, rd2_d, imm_ext_d;
-    logic [4:0] ra1_d, ra2_d; // source registers addresses
+    logic [4:0] ra1_d, ra2_d, wa3_d; // source registers addresses
     logic [31:0] pc_d, pc_plus_4_d;
     // EXECUTE
-    logic [31:0] pc_target_e;
+    logic [31:0] pc_e, pc_plus_4_e, imm_ext_e, pc_target_e;
+    logic [31:0] rd1_e, rd2_e; // operands for ALU
+    logic [4:0] ra1_e, ra2_e, wa3_e; // source registers addresses
+    logic [31:0] alu_src_a_e, alu_src_b_e, alu_result_e;;
+
     // MEMORY
     // WRITEBACK
     logic [4:0] wa3_w; // write address for the register file
@@ -74,6 +88,7 @@ module datapath(
     // DECODE STAGE
     assign ra1_d = instr_d[19:15]; // rs1 is instr_d[19:15]
     assign ra2_d = instr_d[24:20]; // rs2 is instr_d[24:20]
+    assign wa3_d = instr_d[11:7]; // rd is instr_d[11:7]
 
     register_file rf (
         .clk(~clk), // register file is clocked on the falling edge of the clock for simultaneous read/write operations
@@ -93,8 +108,54 @@ module datapath(
     );
 
     // DECODE_EXECUTE REGISTER
+    d_e_register d_e_register_instance (
+        .clk(clk),
+        .rst(rst),
+        .en(~stall_e), // enable the register only if not stalled
+        .clr(flush_e),
+        .rd1_d(rd1_d),
+        .rd2_d(rd2_d),
+        .imm_ext_d(imm_ext_d),
+        .pc_d(pc_d),
+        .pc_plus_4_d(pc_plus_4_d),
+        .ra1_d(ra1_d),
+        .ra2_d(ra2_d),
+        .wa3_d(wa3_d),
+        .rd1_e(rd1_e),
+        .rd2_e(rd2_e),
+        .imm_ext_e(imm_ext_e),
+        .pc_e(pc_e),
+        .pc_plus_4_e(pc_plus_4_e),
+        .ra1_e(ra1_e),
+        .ra2_e(ra2_e),
+        .wa3_e(wa3_e)
+    );
 
     // EXECUTE STAGE
+
+    // PC Target calculation
+    assign pc_target_e = pc_e + imm_ext_e; // PC target for branch/jump instructions
+
+    // Temporary assignment for ALU source A
+    assign alu_src_a_e = rd1_e;
+
+    mux2 #(
+        .WIDTH(32)
+    ) alu_src_b_mux (
+        .s(alu_src_e),
+        .a(rd2_e),
+        .b(imm_ext_e),
+        .out(alu_src_b_e)
+    );
+
+    // ALU
+    alu alu_instance (
+        .a(alu_src_a_e),
+        .b(alu_src_b_e),
+        .alu_op(alu_op),
+        .result(alu_result_e),
+        .zero(zero_e) // zero flag for branch/jump instructions
+    );
 
     // EXECUTE_MEMORY REGISTER
 

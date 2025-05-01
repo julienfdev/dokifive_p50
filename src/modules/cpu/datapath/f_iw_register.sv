@@ -6,7 +6,7 @@ module f_iw_register(
 );
 
     en_clr_arst_register #(
-    .WIDTH(logic [31:0])
+        .WIDTH(32)
     ) pc_f_d (
         .d(pc_f),
         .q(pc_iw),
@@ -17,7 +17,7 @@ module f_iw_register(
     );
 
     en_clr_arst_register #(
-    .WIDTH(logic [31:0])
+        .WIDTH(32)
     ) pc_plus_4_f_d (
         .d(pc_plus_4_f),
         .q(pc_plus_4_iw),

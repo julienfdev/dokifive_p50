@@ -9,7 +9,7 @@ module e_m_register(
 
     // EXECUTE_MEMORY REGISTER
     en_clr_arst_register #(
-        .WIDTH(logic [31:0])
+        .WIDTH(32)
     ) alu_result_e_m (
         .d(alu_result_e),
         .q(alu_result_m),
@@ -20,7 +20,7 @@ module e_m_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(logic [31:0])
+        .WIDTH(32)
     ) w_data_e_m (
         .d(w_data_e),
         .q(w_data_m),
@@ -31,7 +31,7 @@ module e_m_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(logic [31:0])
+        .WIDTH(32)
     ) pc_plus_4_e_m (
         .d(pc_plus_4_e),
         .q(pc_plus_4_m),
@@ -42,7 +42,7 @@ module e_m_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(logic [4:0])
+        .WIDTH(5)
     ) wa3_e_m (
         .d(wa3_e),
         .q(wa3_m),
@@ -53,7 +53,7 @@ module e_m_register(
     );
     
     en_clr_arst_register #(
-        .WIDTH(logic [31:0])
+        .WIDTH(32)
     ) imm_ext_e_m (
         .d(imm_ext_e),
         .q(imm_ext_m),

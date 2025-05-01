@@ -1,7 +1,7 @@
 import types::*;
 
 module datapath #(
-    parameter string INITIAL_RF = ""
+    parameter INITIAL_RF = ""
 )(
     input logic clk, rst,
     // Fetch
@@ -80,7 +80,7 @@ module datapath #(
         .out(pc_fnext)
     );
     en_clr_arst_register #(
-    .WIDTH(logic [31:0])
+    .WIDTH(32)
     ) pc_register (
         .d(pc_fnext),
         .q(pc_f),

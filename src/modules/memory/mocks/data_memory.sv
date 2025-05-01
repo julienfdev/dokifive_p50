@@ -5,7 +5,7 @@ module data_memory #(
     INITIAL = ""
 ) (
     input clk,
-    bool_t we,
+    input bool_t we,
     input logic [4:0] addr,
     input logic [31:0] wdata,
     output logic [31:0] rdata

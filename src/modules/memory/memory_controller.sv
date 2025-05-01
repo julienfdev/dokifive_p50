@@ -61,7 +61,7 @@ data_memory #(
 
 // Seven segments
 en_clr_arst_register #(
-    .WIDTH(logic [31:0])
+    .WIDTH(32)
 ) seven_segments_register_instance (
     .d(mem_write_data),
     .q(seven_segment_display),

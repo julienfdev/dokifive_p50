@@ -2,3 +2,16 @@ simulation/work
 *.o
 *.elf
 simulation/wlf*
+src/*.mem
+src/db
+*.rpt
+*.summary
+*.bak
+*.done
+*.smsg
+*.jdi
+*.pin
+*.pof
+*.sof
+*.qws
+src/incremental_db

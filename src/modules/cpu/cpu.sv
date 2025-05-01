@@ -1,7 +1,7 @@
 import types::*;
 
 module cpu #(
-    parameter string INITIAL_RF = ""
+    parameter INITIAL_RF = ""
 )(
     input logic clk, rst,
 

@@ -57,13 +57,24 @@ module dokifive_p50_top(
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-
-
-
+logic [31:0]  seven_segment_display;
+assign HEX0 = seven_segment_display;
+assign HEX1 = seven_segment_display >> 4;
+assign HEX2 = seven_segment_display >> 8;
+assign HEX3 = seven_segment_display >> 12;
+assign HEX4 = seven_segment_display >> 16;
+assign HEX5 = seven_segment_display >> 20;
 
 //=======================================================
 //  Structural coding
 //=======================================================
+dokifive_soc #(
+	.INITIAL_MOCK_INSTR("instr_init.mem")
+) dokifive_soc_instance (
+	.clk(ADC_CLK_10),
+	.rst(~KEY[0]),
+	.seven_segment_display(seven_segment_display)
+);
 
 
 

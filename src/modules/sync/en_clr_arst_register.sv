@@ -1,9 +1,9 @@
 module en_clr_arst_register #(
-    parameter type WIDTH = logic [31:0] // Default width of the register
+    parameter WIDTH = 32 // Default width of the register
 ) (
-    input WIDTH d, // Data input
-    output WIDTH q, // Data output
-    input logic clk, rst, en, clr // Clock, reset, and enable signals
+    input  logic [WIDTH-1:0] d, // Data input
+    output logic [WIDTH-1:0] q, // Data output
+    input  logic clk, rst, en, clr // Clock, reset, and enable signals
 );
 
     // Asynchronous reset and synchronous enable

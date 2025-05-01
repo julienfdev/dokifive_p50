@@ -1,6 +1,8 @@
 import types::*;
 
-module cpu(
+module cpu #(
+    parameter string INITIAL_RF = ""
+)(
     input logic clk, rst,
 
     // Memory controller
@@ -36,7 +38,9 @@ module cpu(
     assign instr_addr = pc_fnext; // PC_fnext is the address of the instruction to be fetched (registered in the memory controller, synced with pc_f)
     assign instr_f = instr_data; // instruction fetched from memory
 
-    datapath datapath_instance (
+    datapath #(
+        .INITIAL_RF(INITIAL_RF)
+    ) datapath_instance (
         .clk(clk),
         .rst(rst),
         .instr_f(instr_f),

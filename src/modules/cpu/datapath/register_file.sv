@@ -1,5 +1,7 @@
 // 3 ported 32x32 register file
-module register_file(
+module register_file #(
+    parameter string INITIAL = ""
+)(
     input clk, we3,
     input logic [4:0] ra1, ra2, wa3, // read and write addresses
     input logic [31:0] wd3, // write data
@@ -15,6 +17,13 @@ module register_file(
     always_ff @(posedge clk) begin
         if (we3) begin
             rf[wa3] <= wd3; // write data
+        end
+    end
+
+    initial begin
+        if (INITIAL != "") begin
+            $display("Initializing register file from %s", INITIAL);
+            $readmemh(INITIAL, rf);
         end
     end
 

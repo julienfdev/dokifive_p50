@@ -1,6 +1,8 @@
 import types::*;
 
-module datapath(
+module datapath #(
+    parameter string INITIAL_RF = ""
+)(
     input logic clk, rst,
     // Fetch
     input logic [31:0] instr_f, // instruction fetched from memory
@@ -101,7 +103,9 @@ module datapath(
     assign ra2_d = instr_d[24:20]; // rs2 is instr_d[24:20]
     assign wa3_d = instr_d[11:7]; // rd is instr_d[11:7]
 
-    register_file rf (
+    register_file #(
+        .INITIAL(INITIAL_RF)
+    ) rf (
         .clk(~clk), // register file is clocked on the falling edge of the clock for simultaneous read/write operations
         .we3(reg_write_w), // write enable signal, comes from the writeback stage
         .ra1(ra1_d),

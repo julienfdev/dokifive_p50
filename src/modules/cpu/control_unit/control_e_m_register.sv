@@ -5,12 +5,12 @@ module control_e_m_register(
 
     // Execute inputs
     input bool_t reg_write_e,
-    input logic mem_write_e,
+    input bool_t mem_write_e,
     input result_src_t result_src_e,
 
     // Memory outputs
     output bool_t reg_write_m,
-    output logic  mem_write_m,
+    output bool_t mem_write_m,
     output result_src_t result_src_m
 );
 
@@ -27,7 +27,7 @@ module control_e_m_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(logic)
+        .WIDTH(bool_t)
     ) mem_write_e_m (
         .d(mem_write_e),
         .q(mem_write_m),

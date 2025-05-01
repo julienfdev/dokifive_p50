@@ -1,11 +1,11 @@
 package types;
     typedef enum logic [2:0] {
-        I_TYPE,
-        UI_TYPE,
-        S_TYPE,
-        B_TYPE,
-        J_TYPE,
-        U_TYPE
+        IMMSRC_I_TYPE,
+        IMMSRC_UI_TYPE,
+        IMMSRC_S_TYPE,
+        IMMSRC_B_TYPE,
+        IMMSRC_J_TYPE,
+        IMMSRC_U_TYPE
     } immsrc_t;
     typedef enum logic [3:0] {
         ALU_OP_ADD,

@@ -11,7 +11,7 @@ module control_unit(
     output alu_op_t alu_op_e, // ALU operation, used to select the operation to be performed by the ALU
     output bool_t reg_write_w, // Register write signal, used to control the register file
     output result_src_t result_src_w, // Result source, used to select the source of the data to be written back to the register file
-    output logic mem_write_m // Memory write signal, used to control the memory controller
+    output bool_t mem_write_m // Memory write signal, now bool_t
 );
 
 logic [6:0] opcode_d; // Opcode from the instruction
@@ -28,18 +28,18 @@ assign funct7_5_d = instr_d[30]; // Function 7, bit 5 from the instruction
 // Decode
 bool_t reg_write_d;
 result_src_t result_src_d;
-logic mem_write_d;
-logic jump_d;
-logic branch_d;
+bool_t mem_write_d;
+bool_t jump_d;
+bool_t branch_d;
 alu_op_t alu_op_d;
 alu_src_b_sig_t alu_src_b_sig_d;
 
 // Execute
 bool_t reg_write_e;
 result_src_t result_src_e;
-logic mem_write_e;
-logic jump_e;
-logic branch_e;
+bool_t mem_write_e;
+bool_t jump_e;
+bool_t branch_e;
 
 // Memory
 bool_t reg_write_m;
@@ -52,6 +52,7 @@ result_src_t result_src_m;
 // DECODE STAGE
 main_decoder main_decoder_instance (
     .opcode(opcode_d),
+    .funct3(funct3_d),
     .reg_write(reg_write_d),
     .result_src(result_src_d),
     .mem_write(mem_write_d),

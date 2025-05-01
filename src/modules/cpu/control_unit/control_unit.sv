@@ -9,6 +9,7 @@ module control_unit(
     output pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
     output alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
     output alu_op_t alu_op_e, // ALU operation, used to select the operation to be performed by the ALU
+    output pc_target_src_t pc_target_src_e,
     output bool_t reg_write_w, // Register write signal, used to control the register file
     output result_src_t result_src_w, // Result source, used to select the source of the data to be written back to the register file
     output bool_t mem_write_m // Memory write signal, now bool_t
@@ -33,6 +34,7 @@ bool_t jump_d;
 bool_t branch_d;
 alu_op_t alu_op_d;
 alu_src_b_sig_t alu_src_b_sig_d;
+pc_target_src_t pc_target_src_d;
 
 // Execute
 bool_t reg_write_e;
@@ -60,7 +62,8 @@ main_decoder main_decoder_instance (
     .branch(branch_d),
     .alu_control(alu_control),
     .alu_src_b_sig(alu_src_b_sig_d),
-    .immsrc(immsrc_d)
+    .immsrc(immsrc_d),
+    .pc_target_src(pc_target_src_d)
 );
 
 // Alu decoder
@@ -84,13 +87,15 @@ control_d_e_register control_d_e_register_instance (
     .result_src_d(result_src_d),
     .alu_op_d(alu_op_d),
     .alu_src_b_sig_d(alu_src_b_sig_d),
+    .pc_target_src_d(pc_target_src_d),
     .reg_write_e(reg_write_e),
     .mem_write_e(mem_write_e),
     .jump_e(jump_e),
     .branch_e(branch_e),
     .result_src_e(result_src_e),
     .alu_op_e(alu_op_e),
-    .alu_src_b_sig_e(alu_src_b_sig_e)
+    .alu_src_b_sig_e(alu_src_b_sig_e),
+    .pc_target_src_e(pc_target_src_e)
 );
 
 // EXECUTE STAGE

@@ -35,6 +35,7 @@ module datapath #(
     input pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
     input alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
     input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
+    input pc_target_src_t pc_target_src_sig_e,
     // writeback
     input bool_t reg_write_w,
     input result_src_t result_src_w
@@ -53,7 +54,7 @@ module datapath #(
     logic [4:0] ra1_d, ra2_d, wa3_d; // source registers addresses
     logic [31:0] pc_d, pc_plus_4_d;
     // EXECUTE
-    logic [31:0] pc_e, pc_plus_4_e, imm_ext_e, pc_target_e;
+    logic [31:0] pc_e, pc_plus_4_e, imm_ext_e, pc_target_e, pc_target_src_e;
     logic [31:0] rd1_e, rd2_e; // operands for ALU
     logic [4:0] ra1_e, ra2_e, wa3_e; // source registers addresses
     logic [31:0] alu_src_a_e, alu_src_b_e, alu_result_e, w_data_e; // Alu result and write data from rd2_e (or forwared values)
@@ -121,7 +122,7 @@ module datapath #(
     assign wa3_d = instr_d[11:7]; // rd is instr_d[11:7]
 
     register_file #(
-        .INITIAL(INITIAL_RF)
+    .INITIAL(INITIAL_RF)
     ) rf (
         .clk(~clk), // register file is clocked on the falling edge of the clock for simultaneous read/write operations
         .we3(reg_write_w), // write enable signal, comes from the writeback stage
@@ -166,7 +167,18 @@ module datapath #(
     // EXECUTE STAGE
 
     // PC Target calculation
-    assign pc_target_e = pc_e + imm_ext_e; // PC target for branch/jump instructions
+    logic [31:0] pc_target_sum_e;
+    assign pc_target_sum_e = (pc_target_src_e + imm_ext_e); // PC target for branch/jump instructions
+    assign pc_target_e = {pc_target_sum_e[31:1], 1'b0 }; // PC target for branch/jump instructions, zeroing the LSB
+    // 
+    mux2 #(
+    .WIDTH(32)
+    ) pc_target_adder_src (
+        .s(pc_target_src_sig_e),
+        .a(pc_e),
+        .b(rd1_e),
+        .out(pc_target_src_e)
+    );
 
     // Temporary assignment for ALU source A and wd_e
     assign alu_src_a_e = rd1_e;

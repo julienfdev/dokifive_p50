@@ -38,6 +38,10 @@ package types;
         PC_SRC_PC_TARGET = 1'b1 // Target address for branch/jump
     } pc_src_t;
     typedef enum logic {
+        PC_TARGET_PC, // JAL
+        PC_TARGET_RS1 // JALR
+    } pc_target_src_t;
+    typedef enum logic {
         ALU_SRC_B_RS2 = 1'b0, // Second source is rs2 (rd2)
         ALU_SRC_B_IMM = 1'b1 // Second source is immediate (imm_ext)
     } alu_src_b_sig_t;
@@ -49,7 +53,7 @@ package types;
         OPCODE_LOAD = 7'd3,
         OPCODE_I_TYPE = 7'd19,
         OPCODE_AUIPC = 7'd23,
-        OPCODE_S = 7'd35,
+        OPCODE_STORE = 7'd35,
         OPCODE_R = 7'd51,
         OPCODE_LUI = 7'd55,
         OPCODE_BRANCH = 7'd99,

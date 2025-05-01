@@ -4,7 +4,7 @@ import types::*;
 module instruction_memory #(
     INITIAL = ""
 ) (
-    input clk,
+    input clk, rst,
     input logic [4:0] addr,
     output logic [31:0] rdata
 );
@@ -13,12 +13,14 @@ module instruction_memory #(
     logic [4:0] reg_addr;
 
     always_ff @(posedge clk) begin
-        reg_addr <= addr;
+        if(!rst) begin
+            reg_addr <= addr;
+        end
     end
 
     assign rdata = data[reg_addr];
 
-    initial begin 
+    initial begin
         if(INITIAL != "") begin
             $display("Initializing instruction memory from %s", INITIAL);
             $readmemh(INITIAL, data);

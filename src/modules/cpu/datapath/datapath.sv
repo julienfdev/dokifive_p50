@@ -5,13 +5,13 @@ module datapath #(
 )(
     input logic clk, rst,
     // Fetch
-    input logic [31:0] instr_f, // instruction fetched from memory
+    input logic [31:0] instr_iw, // instruction fetched from memory
     // Memory
     input logic [31:0] mem_data_r_m, // data read from memory
 
     // OUTPUTS
     // Fetch stage
-    output logic [31:0] pc_fnext, // it's fed before the clock edge to the memory controller because the memory is registered
+    output logic [31:0] pc_f, // it's fed before the clock edge to the memory controller because the memory is registered
     // Decode stage
     output logic [31:0] instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
     // Execute stage
@@ -42,7 +42,12 @@ module datapath #(
 );
     // INTERNAL DATAPATH SIGNALS
     // FETCH
-    logic [31:0] pc_f, pc_plus_4_f;
+    logic [31:0] pc_fnext, pc_plus_4_f;
+    // INSTRUCTION WAIT
+    // Instruction Wait stage
+    logic [31:0] pc_iw; // PC to be used in the instruction wait stage, must be forwarded to the decode stage
+    logic [31:0] pc_plus_4_iw; // PC + 4, used to calculate the target address for branch/jump instructions
+
     // DECODE
     logic [31:0] rd1_d, rd2_d, imm_ext_d;
     logic [4:0] ra1_d, ra2_d, wa3_d; // source registers addresses
@@ -84,15 +89,27 @@ module datapath #(
     );
     assign pc_plus_4_f = pc_f + 4; // PC + 4
 
-    // FETCH_DECODE REGISTER
-    f_d_register f_d_register_instance (
+    // FETCH_INSTRUCTION_WAIT REGISTER
+    f_iw_register f_iw_register_instance ( // waste one clock cycle for the instruction to arrive from memory
+        .clk(clk),
+        .rst(rst),
+        .en(1'b1),
+        .clr(1'b0),
+        .pc_f(pc_f),
+        .pc_plus_4_f(pc_plus_4_f),
+        .pc_iw(pc_iw),
+        .pc_plus_4_iw(pc_plus_4_iw)
+    );
+
+    // INSTRUCTION_WAIT_DECODE REGISTER
+    iw_d_register f_d_register_instance (
         .clk(clk),
         .rst(rst),
         .en(~stall_d), // enable the register only if not stalled
         .clr(flush_d),
-        .instr_f(instr_f),
-        .pc_f(pc_f),
-        .pc_plus_4_f(pc_plus_4_f),
+        .instr_iw(instr_iw),
+        .pc_iw(pc_iw),
+        .pc_plus_4_iw(pc_plus_4_iw),
         .instr_d(instr_d),
         .pc_d(pc_d),
         .pc_plus_4_d(pc_plus_4_d)

@@ -12,7 +12,7 @@ module cpu #(
 );
 
     // WIRE DECLARATIONS
-    logic [31:0] instr_f, pc_fnext; // instruction fetched from memory and the next PC value
+    logic [31:0] instr_f, pc_f; // instruction fetched from memory and the next PC value
 
 
     // Control unit signals
@@ -34,8 +34,17 @@ module cpu #(
     // Flushes
     logic flush_d, flush_e; // flush signals for decode and execute stages
 
+    // TODO plug stalls and flushes to the hazard unit, for  now, assigning default values
+    assign stall_f = 1'b0; // no stall for fetch stage
+    assign stall_d = 1'b0; // no stall for decode stage
+    assign stall_e = 1'b0; // no stall for execute stage
+    assign stall_m = 1'b0; // no stall for memory stage
+    assign stall_wb = 1'b0; // no stall for writeback stage
+    assign flush_d = 1'b0; // no flush for decode stage
+    assign flush_e = 1'b0; // no flush for execute stage
+
     // WIRE ASSIGNMENTS
-    assign instr_addr = pc_fnext; // PC_fnext is the address of the instruction to be fetched (registered in the memory controller, synced with pc_f)
+    assign instr_addr = pc_f; // PC_fnext is the address of the instruction to be fetched (registered in the memory controller, synced with pc_f)
     assign instr_f = instr_data; // instruction fetched from memory
 
     datapath #(
@@ -43,9 +52,9 @@ module cpu #(
     ) datapath_instance (
         .clk(clk),
         .rst(rst),
-        .instr_f(instr_f),
+        .instr_iw(instr_f),
         .mem_data_r_m(mem_data_r),
-        .pc_fnext(pc_fnext),
+        .pc_f(pc_f),
         .instr_d(instr_d),
         .zero_e(zero_e),
         .mem_addr_m(mem_addr),

@@ -17,8 +17,8 @@ module  memory_controller #(
 );
 
 localparam INSTRUCTION_ROM_START = 'h0;
-localparam DATA_RAM_START = 'h100;
-localparam DATA_RAM_END = 'h200;
+localparam DATA_RAM_START = 'h200;
+localparam DATA_RAM_END = 'h300;
 
 // Instruction
 logic [31:0] instr_data_raw;
@@ -39,6 +39,7 @@ instruction_memory #(
     .INITIAL(INITIAL_MOCK_INSTR)
 ) instruction_memory_instance (
     .clk(clk),
+    .rst(rst),
     .addr(instr_addr >> 2), // Word aligned
     .rdata(instr_data_raw)
 );

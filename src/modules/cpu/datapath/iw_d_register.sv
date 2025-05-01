@@ -1,6 +1,6 @@
-module f_d_register(
+module iw_d_register(
     input logic clk, rst, en, clr,
-    input logic [31:0] instr_f, pc_f, pc_plus_4_f, // instruction fetched and PC + 4
+    input logic [31:0] instr_iw, pc_iw, pc_plus_4_iw, // instruction fetched and PC + 4
 
     output logic [31:0] instr_d, pc_d, pc_plus_4_d // instruction to be decoded and PC + 4
 );
@@ -8,7 +8,7 @@ module f_d_register(
     en_clr_arst_register #(
     .WIDTH(logic [31:0])
     ) instr_f_d (
-        .d(instr_f),
+        .d(instr_iw),
         .q(instr_d),
         .clk(clk),
         .rst(rst),
@@ -19,7 +19,7 @@ module f_d_register(
     en_clr_arst_register #(
     .WIDTH(logic [31:0])
     ) pc_f_d (
-        .d(pc_f),
+        .d(pc_iw),
         .q(pc_d),
         .clk(clk),
         .rst(rst),
@@ -30,7 +30,7 @@ module f_d_register(
     en_clr_arst_register #(
     .WIDTH(logic [31:0])
     ) pc_plus_4_f_d (
-        .d(pc_plus_4_f),
+        .d(pc_plus_4_iw),
         .q(pc_plus_4_d),
         .clk(clk),
         .rst(rst),

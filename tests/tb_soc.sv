@@ -12,7 +12,7 @@ module tb_soc;
         .INITIAL_MOCK_DATA("data_init.mem")
     ) uut  (
         .clk(clk),
-        .rst(rst),
+        .rst(rst)
     );
 
     // Clock generation

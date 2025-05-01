@@ -4,6 +4,7 @@ module tb_soc;
     // Clock and reset
     logic clk = 0;
     logic rst = 1;
+    logic [31:0] seven_segments;
 
     // SoC instance
     dokifive_soc #(
@@ -12,7 +13,8 @@ module tb_soc;
         .INITIAL_MOCK_DATA("")
     ) uut  (
         .clk(clk),
-        .rst(rst)
+        .rst(rst),
+        .seven_segment_display(seven_segments)
     );
 
     // Clock generation

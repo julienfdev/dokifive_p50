@@ -1,3 +1,4 @@
 simulation/work
 *.o
 *.elf
+simulation/wlf*

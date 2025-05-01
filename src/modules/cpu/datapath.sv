@@ -2,7 +2,10 @@ import types::*;
 
 module datapath(
     input logic clk, rst,
+    // Fetch
     input logic [31:0] instr_f, // instruction fetched from memory
+    // Memory
+    input logic [31:0] r_data_m, // data read from memory
 
     // OUTPUTS
     // Fetch stage
@@ -11,6 +14,8 @@ module datapath(
     output logic [31:0] instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
     // Execute stage
     output logic zero_e, // zero flag from the ALU, used for branch/jump instructions
+    // Memory stage
+    output logic [31:0] w_addr_m, w_data_m,
 
     // Hazard Unit signals
     // Stalls
@@ -28,7 +33,8 @@ module datapath(
     input logic alu_src_e, // ALU source, used to switch between the second operand and the immediate value
     input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
     // writeback
-    input logic reg_write_w
+    input logic reg_write_w,
+    input logic [1:0] result_src_w // TODO change to enum 
     // Control signals
 );
     // INTERNAL DATAPATH SIGNALS
@@ -42,12 +48,16 @@ module datapath(
     logic [31:0] pc_e, pc_plus_4_e, imm_ext_e, pc_target_e;
     logic [31:0] rd1_e, rd2_e; // operands for ALU
     logic [4:0] ra1_e, ra2_e, wa3_e; // source registers addresses
-    logic [31:0] alu_src_a_e, alu_src_b_e, alu_result_e;;
+    logic [31:0] alu_src_a_e, alu_src_b_e, alu_result_e, w_data_e; // Alu result and write data from rd2_e (or forwared values)
 
     // MEMORY
+    logic [31:0] alu_result_m, pc_plus_4_m; // ALU result and write data from rd2_e (or forwared values)
+    logic [4:0] wa3_m; // write address for the register file
+
     // WRITEBACK
     logic [4:0] wa3_w; // write address for the register file
     logic [31:0] result_w; // result to be written back to the register file
+    logic [31:0] r_data_w, pc_plus_4_w, alu_result_w; // Multiplexer inputs for the writeback stage
 
     // LOGIC
     // FETCH STAGE
@@ -136,8 +146,9 @@ module datapath(
     // PC Target calculation
     assign pc_target_e = pc_e + imm_ext_e; // PC target for branch/jump instructions
 
-    // Temporary assignment for ALU source A
+    // Temporary assignment for ALU source A and wd_e
     assign alu_src_a_e = rd1_e;
+    assign w_data_e = rd2_e; // write data for the data memory
 
     mux2 #(
         .WIDTH(32)
@@ -158,11 +169,51 @@ module datapath(
     );
 
     // EXECUTE_MEMORY REGISTER
+    e_m_register e_m_register_instance (
+        .clk(clk),
+        .rst(rst),
+        .en(~stall_m), // enable the register only if not stalled
+        .clr(1'b0), // no clear signal for the execute memory register
+        .alu_result_e(alu_result_e),
+        .w_data_e(w_data_e),
+        .pc_plus_4_e(pc_plus_4_e),
+        .wa3_e(wa3_e),
+        .alu_result_m(alu_result_m),
+        .w_data_m(w_data_m),
+        .pc_plus_4_m(pc_plus_4_m),
+        .wa3_m(wa3_m)
+    );
 
     // MEMORY STAGE
+    // Memory stage is simpler, as the bulk of the work is done outside of the datapath, eveything is already declared
+    assign w_addr_m = alu_result_m; // write address for the data memory
 
     // MEMORY_WRITEBACK REGISTER
+    m_w_register m_w_register_instance (
+        .clk(clk),
+        .rst(rst),
+        .en(~stall_wb), // enable the register only if not stalled
+        .clr(1'b0), // no clear signal for the memory writeback register
+        .alu_result_m(alu_result_m),
+        .r_data_m(r_data_m),
+        .pc_plus_4_m(pc_plus_4_m),
+        .wa3_m(wa3_m),
+        .alu_result_w(alu_result_w), // ALU result to be written back to the register file
+        .r_data_w(r_data_w), // data read from memory
+        .pc_plus_4_w(pc_plus_4_w),
+        .wa3_w(wa3_w) // write address for the register file,
+    );
 
     // WRITE BACK STAGE
+    mux4 #(
+        .WIDTH(32)
+    ) wb_mux (
+        .s(result_src_w),
+        .a(alu_result_w),
+        .b(r_data_w),
+        .c(pc_plus_4_w),
+        .d(32'hDEADBEEF),
+        .out(result_w)
+    );
 
 endmodule

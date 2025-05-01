@@ -27,4 +27,21 @@ package types;
         ALU_CONTROL_RTYPE,
         ALU_CONTROL_BTYPE
     } alu_control_t;
+    typedef enum logic [1:0] {
+        RESULT_SRC_ALU = 2'b00,
+        RESULT_SRC_MEM = 2'b01,
+        RESULT_SRC_PC_PLUS_4 = 2'b10
+    } result_src_t;
+    typedef enum logic {
+        PC_SRC_PC_PLUS_4 = 1'b0, // PC + 4
+        PC_SRC_PC_TARGET = 1'b1 // Target address for branch/jump
+    } pc_src_t;
+    typedef enum logic {
+        ALU_SRC_B_RS2 = 1'b0, // Second source is rs2 (rd2)
+        ALU_SRC_B_IMM = 1'b1 // Second source is immediate (imm_ext)
+    } alu_src_b_sig_t;
+    typedef enum logic {
+        FALSE = 1'b0,
+        TRUE = 1'b1
+    } bool_t;
 endpackage

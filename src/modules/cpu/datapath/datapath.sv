@@ -5,7 +5,7 @@ module datapath(
     // Fetch
     input logic [31:0] instr_f, // instruction fetched from memory
     // Memory
-    input logic [31:0] r_data_m, // data read from memory
+    input logic [31:0] mem_data_r_m, // data read from memory
 
     // OUTPUTS
     // Fetch stage
@@ -15,7 +15,8 @@ module datapath(
     // Execute stage
     output logic zero_e, // zero flag from the ALU, used for branch/jump instructions
     // Memory stage
-    output logic [31:0] w_addr_m, w_data_m,
+    output logic [31:0] mem_addr_m, // address for the data memory, used to read/write data from/to memory
+    output logic [31:0] mem_data_w_m, // data to be written to memory, used to write data to memory
 
     // Hazard Unit signals
     // Stalls
@@ -29,12 +30,12 @@ module datapath(
     // decode
     input immsrc_t immsrc_d,
     // execute
-    input logic pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
-    input logic alu_src_e, // ALU source, used to switch between the second operand and the immediate value
+    input pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
+    input alu_src_b_sig_t alu_src_b_e_sig, // ALU source, used to switch between the second operand and the immediate value
     input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
     // writeback
-    input logic reg_write_w,
-    input logic [1:0] result_src_w // TODO change to enum 
+    input bool_t reg_write_w,
+    input result_src_t result_src_w
     // Control signals
 );
     // INTERNAL DATAPATH SIGNALS
@@ -151,9 +152,9 @@ module datapath(
     assign w_data_e = rd2_e; // write data for the data memory
 
     mux2 #(
-        .WIDTH(32)
+    .WIDTH(32)
     ) alu_src_b_mux (
-        .s(alu_src_e),
+        .s(alu_src_b_e_sig),
         .a(rd2_e),
         .b(imm_ext_e),
         .out(alu_src_b_e)
@@ -179,14 +180,14 @@ module datapath(
         .pc_plus_4_e(pc_plus_4_e),
         .wa3_e(wa3_e),
         .alu_result_m(alu_result_m),
-        .w_data_m(w_data_m),
+        .w_data_m(mem_data_w_m),
         .pc_plus_4_m(pc_plus_4_m),
         .wa3_m(wa3_m)
     );
 
     // MEMORY STAGE
     // Memory stage is simpler, as the bulk of the work is done outside of the datapath, eveything is already declared
-    assign w_addr_m = alu_result_m; // write address for the data memory
+    assign mem_addr_m = alu_result_m; // write address for the data memory
 
     // MEMORY_WRITEBACK REGISTER
     m_w_register m_w_register_instance (
@@ -195,7 +196,7 @@ module datapath(
         .en(~stall_wb), // enable the register only if not stalled
         .clr(1'b0), // no clear signal for the memory writeback register
         .alu_result_m(alu_result_m),
-        .r_data_m(r_data_m),
+        .r_data_m(mem_data_r_m),
         .pc_plus_4_m(pc_plus_4_m),
         .wa3_m(wa3_m),
         .alu_result_w(alu_result_w), // ALU result to be written back to the register file
@@ -206,7 +207,7 @@ module datapath(
 
     // WRITE BACK STAGE
     mux4 #(
-        .WIDTH(32)
+    .WIDTH(32)
     ) wb_mux (
         .s(result_src_w),
         .a(alu_result_w),

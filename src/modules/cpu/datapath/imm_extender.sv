@@ -10,6 +10,7 @@ module imm_extender(
 always_comb begin
     case (immsrc)
         I_TYPE  : imm_ext = {{20{instr_31_7[31]}}, instr_31_7[31:20]};
+        UI_TYPE : imm_ext = {27'b0, instr_31_7[24:20]};
         S_TYPE  : imm_ext = {{20{instr_31_7[31]}}, instr_31_7[31:25], instr_31_7[11:7]};
         B_TYPE  : imm_ext = {{20{instr_31_7[31]}}, instr_31_7[7], instr_31_7[30:25], instr_31_7[11:8], 1'b0};
         J_TYPE  : imm_ext = {{12{instr_31_7[31]}}, instr_31_7[19:12], instr_31_7[20], instr_31_7[30:21], 1'b0};

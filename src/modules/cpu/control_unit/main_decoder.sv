@@ -2,6 +2,7 @@ import types::*;
 
 module main_decoder(
     input logic [6:0] opcode,
+    input logic [2:0] funct3,
 
     output bool_t reg_write,
     output result_src_t result_src,

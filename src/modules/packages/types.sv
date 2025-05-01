@@ -1,6 +1,7 @@
 package types;
     typedef enum logic [2:0] {
         I_TYPE,
+        UI_TYPE,
         S_TYPE,
         B_TYPE,
         J_TYPE,
@@ -44,4 +45,15 @@ package types;
         FALSE = 1'b0,
         TRUE = 1'b1
     } bool_t;
+    typedef enum logic [6:0] {
+        OPCODE_LOAD = 7'd3,
+        OPCODE_I_TYPE = 7'd19,
+        OPCODE_AUIPC = 7'd23,
+        OPCODE_S = 7'd35,
+        OPCODE_R = 7'd51,
+        OPCODE_LUI = 7'd55,
+        OPCODE_BRANCH = 7'd99,
+        OPCODE_JALR = 7'd103,
+        OPCODE_JAL = 7'd111
+    } opcode_t; // Opcode for the instruction
 endpackage

@@ -1,10 +1,11 @@
 .globl _start
-
 .equ _start, 0x00000000
-
-// RAM address space
+# RAM address space
 .equ RAM_START, 0x200
 
+
+
+.text
 _start:
 addi s0, zero, 1337 # t0 = zero + 1337
 addi t0, zero, RAM_START # prepare the RAM address to store 1337
@@ -29,7 +30,14 @@ nop
 branch:
 addi s0, s0, 100
 addi s1, s1, 200
-
+addi t2, zero, 3
+nop
+nop
+sll  s0, s0, t2
+srli s1, s1, 2
+nop
+nop
+or  s3, s0, s1
 
 
 

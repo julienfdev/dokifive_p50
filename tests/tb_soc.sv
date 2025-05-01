@@ -7,9 +7,9 @@ module tb_soc;
 
     // SoC instance
     dokifive_soc #(
-        .INITIAL_RF("rf_init.mem"),
+        .INITIAL_RF(""),
         .INITIAL_MOCK_INSTR("instr_init.mem"),
-        .INITIAL_MOCK_DATA("data_init.mem")
+        .INITIAL_MOCK_DATA("")
     ) uut  (
         .clk(clk),
         .rst(rst)

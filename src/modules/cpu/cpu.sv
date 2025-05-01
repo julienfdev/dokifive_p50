@@ -23,6 +23,7 @@ module cpu #(
     // execute
     pc_src_t pc_src_e;
     pc_target_src_t pc_target_src_sig_e; // PC source for branch/jump, used to switch between PC + 4 and the target address
+    alu_src_a_sig_t alu_src_a_sig_e; // ALU source A, used to switch between rs1 and the PC (AUIPC)
     alu_src_b_sig_t alu_src_b_sig_e; // ALU source, used to switch between the second operand and the immediate value
     alu_op_t alu_op; // ALU operation, used to select the operation to be performed by the ALU
     // writeback
@@ -69,6 +70,7 @@ module cpu #(
         .flush_e(flush_e),
         .immsrc_d(immsrc_d),
         .pc_src_e(pc_src_e),
+        .alu_src_a_sig_e(alu_src_a_sig_e),
         .alu_src_b_sig_e(alu_src_b_sig_e),
         .alu_op(alu_op),
         .pc_target_src_sig_e(pc_target_src_sig_e),
@@ -89,6 +91,7 @@ module cpu #(
         .zero_e(zero_e),
         .immsrc_d(immsrc_d),
         .pc_src_e(pc_src_e),
+        .alu_src_a_sig_e(alu_src_a_sig_e),
         .alu_src_b_sig_e(alu_src_b_sig_e),
         .alu_op_e(alu_op),
         .pc_target_src_e(pc_target_src_sig_e),

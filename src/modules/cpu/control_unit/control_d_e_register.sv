@@ -8,6 +8,7 @@ module control_d_e_register(
     input bool_t mem_write_d, jump_d, branch_d,
     input result_src_t result_src_d,
     input alu_op_t alu_op_d,
+    input alu_src_a_sig_t alu_src_a_sig_d,
     input alu_src_b_sig_t alu_src_b_sig_d,
     input pc_target_src_t pc_target_src_d,
 
@@ -16,6 +17,7 @@ module control_d_e_register(
     output bool_t mem_write_e, jump_e, branch_e,
     output result_src_t result_src_e,
     output alu_op_t alu_op_e,
+    output alu_src_a_sig_t alu_src_a_sig_e,
     output alu_src_b_sig_t alu_src_b_sig_e,
     output pc_target_src_t pc_target_src_e
 
@@ -103,6 +105,17 @@ en_clr_arst_register #(
 ) pc_target_src_en_clr_arst_register_instance (
     .d(pc_target_src_d),
     .q(pc_target_src_e),
+    .clk(clk),
+    .rst(rst),
+    .en(en),
+    .clr(clr)
+);
+
+en_clr_arst_register #(
+    .WIDTH(alu_src_a_sig_t)
+) alu_src_a_sig_en_clr_arst_register_instance (
+    .d(alu_src_a_sig_d),
+    .q(alu_src_a_sig_e),
     .clk(clk),
     .rst(rst),
     .en(en),

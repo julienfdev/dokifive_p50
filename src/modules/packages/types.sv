@@ -31,7 +31,8 @@ package types;
     typedef enum logic [1:0] {
         RESULT_SRC_ALU = 2'b00,
         RESULT_SRC_MEM = 2'b01,
-        RESULT_SRC_PC_PLUS_4 = 2'b10
+        RESULT_SRC_PC_PLUS_4 = 2'b10,
+        RESULT_SRC_IMM = 2'b11
     } result_src_t;
     typedef enum logic {
         PC_SRC_PC_PLUS_4 = 1'b0, // PC + 4
@@ -41,6 +42,10 @@ package types;
         PC_TARGET_PC, // JAL
         PC_TARGET_RS1 // JALR
     } pc_target_src_t;
+    typedef enum logic {
+        ALU_SRC_A_RS1 = 1'b0, // First source is rs1 (rd1)
+        ALU_SRC_A_PC = 1'b1 // Using the program counter (AUIPC) 
+    } alu_src_a_sig_t;
     typedef enum logic {
         ALU_SRC_B_RS2 = 1'b0, // Second source is rs2 (rd2)
         ALU_SRC_B_IMM = 1'b1 // Second source is immediate (imm_ext)

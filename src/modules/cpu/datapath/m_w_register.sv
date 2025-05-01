@@ -1,11 +1,11 @@
 module m_w_register(
     input logic clk, rst, en, clr,
     // input nets
-    input logic [31:0] alu_result_m, r_data_m, pc_plus_4_m,
+    input logic [31:0] alu_result_m, r_data_m, pc_plus_4_m, imm_ext_m,
     input logic [4:0] wa3_m, // write address for the register file
 
     // output nets
-    output logic [31:0] alu_result_w, r_data_w, pc_plus_4_w,
+    output logic [31:0] alu_result_w, r_data_w, pc_plus_4_w, imm_ext_w, // Multiplexer inputs for the writeback stage
     output logic [4:0] wa3_w // write address for the register file
 );
 
@@ -48,6 +48,17 @@ module m_w_register(
     ) wa3_m_w (
         .d(wa3_m),
         .q(wa3_w),
+        .clk(clk),
+        .rst(rst),
+        .en(en),
+        .clr(clr)
+    );
+
+    en_clr_arst_register #(
+        .WIDTH(logic [31:0])
+    ) imm_ext_m_w (
+        .d(imm_ext_m),
+        .q(imm_ext_w),
         .clk(clk),
         .rst(rst),
         .en(en),

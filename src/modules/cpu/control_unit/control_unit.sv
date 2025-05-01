@@ -7,6 +7,7 @@ module control_unit(
 
     output immsrc_t immsrc_d, // Immediate source for the decode stage
     output pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
+    output alu_src_a_sig_t alu_src_a_sig_e, // ALU source A, used to switch between rs1 and the PC (AUIPC)
     output alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
     output alu_op_t alu_op_e, // ALU operation, used to select the operation to be performed by the ALU
     output pc_target_src_t pc_target_src_e,
@@ -33,6 +34,7 @@ bool_t mem_write_d;
 bool_t jump_d;
 bool_t branch_d;
 alu_op_t alu_op_d;
+alu_src_a_sig_t alu_src_a_sig_d;
 alu_src_b_sig_t alu_src_b_sig_d;
 pc_target_src_t pc_target_src_d;
 
@@ -61,6 +63,7 @@ main_decoder main_decoder_instance (
     .jump(jump_d),
     .branch(branch_d),
     .alu_control(alu_control),
+    .alu_src_a_sig(alu_src_a_sig_d),
     .alu_src_b_sig(alu_src_b_sig_d),
     .immsrc(immsrc_d),
     .pc_target_src(pc_target_src_d)
@@ -86,6 +89,7 @@ control_d_e_register control_d_e_register_instance (
     .branch_d(branch_d),
     .result_src_d(result_src_d),
     .alu_op_d(alu_op_d),
+    .alu_src_a_sig_d(alu_src_a_sig_d),
     .alu_src_b_sig_d(alu_src_b_sig_d),
     .pc_target_src_d(pc_target_src_d),
     .reg_write_e(reg_write_e),
@@ -94,6 +98,7 @@ control_d_e_register control_d_e_register_instance (
     .branch_e(branch_e),
     .result_src_e(result_src_e),
     .alu_op_e(alu_op_e),
+    .alu_src_a_sig_e(alu_src_a_sig_e),
     .alu_src_b_sig_e(alu_src_b_sig_e),
     .pc_target_src_e(pc_target_src_e)
 );

@@ -33,6 +33,7 @@ module datapath #(
     input immsrc_t immsrc_d,
     // execute
     input pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
+    input alu_src_a_sig_t alu_src_a_sig_e, // ALU source A, used to switch between rs1 and the PC (AUIPC)
     input alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
     input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
     input pc_target_src_t pc_target_src_sig_e,
@@ -60,13 +61,13 @@ module datapath #(
     logic [31:0] alu_src_a_e, alu_src_b_e, alu_result_e, w_data_e; // Alu result and write data from rd2_e (or forwared values)
 
     // MEMORY
-    logic [31:0] alu_result_m, pc_plus_4_m; // ALU result and write data from rd2_e (or forwared values)
+    logic [31:0] alu_result_m, pc_plus_4_m, imm_ext_m; // ALU result and write data from rd2_e (or forwared values)
     logic [4:0] wa3_m; // write address for the register file
 
     // WRITEBACK
     logic [4:0] wa3_w; // write address for the register file
     logic [31:0] result_w; // result to be written back to the register file
-    logic [31:0] r_data_w, pc_plus_4_w, alu_result_w; // Multiplexer inputs for the writeback stage
+    logic [31:0] r_data_w, pc_plus_4_w, alu_result_w, imm_ext_w; // Multiplexer inputs for the writeback stage
 
     // LOGIC
     // FETCH STAGE
@@ -180,9 +181,16 @@ module datapath #(
         .out(pc_target_src_e)
     );
 
-    // Temporary assignment for ALU source A and wd_e
-    assign alu_src_a_e = rd1_e;
     assign w_data_e = rd2_e; // write data for the data memory
+
+    mux2 #(
+        .WIDTH(32)
+    ) alu_src_a_mux (
+        .s(alu_src_a_sig_e),
+        .a(rd1_e),
+        .b(pc_e),
+        .out(alu_src_a_e)
+    );
 
     mux2 #(
     .WIDTH(32)
@@ -211,10 +219,12 @@ module datapath #(
         .alu_result_e(alu_result_e),
         .w_data_e(w_data_e),
         .pc_plus_4_e(pc_plus_4_e),
+        .imm_ext_e(imm_ext_e),
         .wa3_e(wa3_e),
         .alu_result_m(alu_result_m),
         .w_data_m(mem_data_w_m),
         .pc_plus_4_m(pc_plus_4_m),
+        .imm_ext_m(imm_ext_m),
         .wa3_m(wa3_m)
     );
 
@@ -231,10 +241,12 @@ module datapath #(
         .alu_result_m(alu_result_m),
         .r_data_m(mem_data_r_m),
         .pc_plus_4_m(pc_plus_4_m),
+        .imm_ext_m(imm_ext_m),
         .wa3_m(wa3_m),
         .alu_result_w(alu_result_w), // ALU result to be written back to the register file
         .r_data_w(r_data_w), // data read from memory
         .pc_plus_4_w(pc_plus_4_w),
+        .imm_ext_w(imm_ext_w), // immediate value to be written back to the register file
         .wa3_w(wa3_w) // write address for the register file,
     );
 
@@ -246,7 +258,7 @@ module datapath #(
         .a(alu_result_w),
         .b(r_data_w),
         .c(pc_plus_4_w),
-        .d(32'hDEADBEEF),
+        .d(imm_ext_w),
         .out(result_w)
     );
 

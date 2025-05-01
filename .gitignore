@@ -1,1 +1,3 @@
 simulation/work
+*.o
+*.elf

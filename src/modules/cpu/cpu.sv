@@ -60,4 +60,24 @@ module cpu(
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w)
     );
+
+
+    // Control unit
+    control_unit control_unit_instance (
+        .clk(clk),
+        .rst(rst),
+        .flush_e(flush_e),
+        .stall_e(stall_e),
+        .stall_m(stall_m),
+        .stall_wb(stall_wb),
+        .instr_d(instr_d),
+        .zero_e(zero_e),
+        .immsrc_d(immsrc_d),
+        .pc_src_e(pc_src_e),
+        .alu_src_b_e_sig(alu_src_b_e_sig),
+        .alu_op(alu_op),
+        .reg_write_w(reg_write_w),
+        .result_src_w(result_src_w),
+        .mem_write(mem_write)
+    );
 endmodule

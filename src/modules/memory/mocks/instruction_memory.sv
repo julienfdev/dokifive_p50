@@ -1,0 +1,28 @@
+import types::*;
+
+// Mock and fully combinational data memory, point is to be able to validate the pipeline without the hazard state machine (1 cycle read delay)
+module instruction_memory #(
+    INITIAL = ""
+) (
+    input clk,
+    input logic [4:0] addr,
+    output logic [31:0] rdata
+);
+
+    logic [31:0] data[0:31]; // 1k registers
+    logic [4:0] reg_addr;
+
+    always_ff @(posedge clk) begin
+        reg_addr <= addr;
+    end
+
+    assign rdata = data[reg_addr];
+
+    initial begin 
+        if(INITIAL != "") begin
+            $display("Initializing instruction memory from %s", INITIAL);
+            $readmemh(INITIAL, data);
+        end
+    end
+
+endmodule

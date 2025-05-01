@@ -8,7 +8,7 @@ module cpu #(
     // Memory controller
     input logic [31:0] instr_data, mem_data_r, // From the memory controller
     output logic [31:0] instr_addr, mem_addr, mem_data_w, // To the memory controller
-    output logic mem_write // Memory write signal, will be used by the control unit to control the memory controller
+    output bool_t mem_write // Memory write signal, will be used by the control unit to control the memory controller
 );
 
     // WIRE DECLARATIONS

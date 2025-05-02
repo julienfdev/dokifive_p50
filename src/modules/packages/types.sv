@@ -75,4 +75,8 @@ package types;
         RD2_FWD_WB = 2'b01, // Forwarding from WB stage
         RD2_FWD_MEM = 2'b10 // Forwarding from MEM stage 
     } rd2_fwd_t; // Select signal for the second read data (rd2)
+    typedef enum logic {
+        LW_NOT_LW,
+        LW_WAITING_READVALID
+    } lw_fsm_state_t;
 endpackage

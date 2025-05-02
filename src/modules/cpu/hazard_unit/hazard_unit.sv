@@ -8,6 +8,7 @@ module hazard_unit(
     input  logic [4:0] rd_addr_m, rd_addr_wb, // rd address from the memory and writeback stages
     input  bool_t       reg_write_m, reg_write_wb, // reg_write signals from the memory and writeback stages
     // Stalls
+    input logic readdatavalid,
     input  logic [4:0] rs1_addr_d, rs2_addr_d, rd_addr_e,
     input result_src_t result_src_e,
 
@@ -22,19 +23,17 @@ module hazard_unit(
     output logic stall_f, stall_d, stall_e, stall_m, stall_wb, flush_d, flush_e
 );
 
-    // Debugging
-    assign stall_e = 1'b0;
-    assign stall_m = 1'b0; // no stall for memory stage
-    assign stall_wb = 1'b0; // no stall for writeback stage
-
     // Control Hazard
     logic control_hazard;
     assign control_hazard = pc_src_e == PC_SRC_PC_TARGET;
 
     // Declaration
-    logic lw_stall; // a load word stall induces a stall of f (and IW) and d registers, and introduces a bubble in e
-    assign stall_f = lw_stall;
-    assign stall_d = lw_stall;
+    logic lw_stall, readdatawait; // a load word stall induces a stall of f (and IW) and d registers, and introduces a bubble in e
+    assign stall_f = lw_stall | readdatawait;
+    assign stall_d = lw_stall | readdatawait;
+    assign stall_e = readdatawait;
+    assign stall_m = readdatawait; 
+    assign stall_wb = readdatawait; 
     assign flush_d = control_hazard;
     assign flush_e = lw_stall | control_hazard;
     // STALL M and WB will be asserted by the cycle latency FSM when switching to BRAM
@@ -67,9 +66,16 @@ module hazard_unit(
     // Stall detection, will be asserted for 1 clock cycle as we're introducing a bubble in E
     // read latency will be handled by the state machine when we switch to BRAM
     assign lw_stall = (result_src_e == RESULT_SRC_MEM) && ((rs1_addr_d == rd_addr_e) ||  (rs2_addr_d == rd_addr_e));
-    
 
-    // TODO FSM for cycle
+
+    // Read data wait FSM
+    lw_fsm lw_fsm_instance (
+        .clk(clk),
+        .rst(rst),
+        .lwstall(lw_stall),
+        .readdatavalid(readdatavalid),
+        .readdatawait(readdatawait)
+    );
 
 
 endmodule

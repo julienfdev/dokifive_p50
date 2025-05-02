@@ -9,7 +9,8 @@ module cpu #(
     input logic [31:0] instr_data, mem_data_r, // From the memory controller
     output logic [31:0] instr_addr, mem_addr, mem_data_w, // To the memory controller
     output bool_t mem_write, // Memory write signal, will be used by the control unit to control the memory controller
-    output logic stall_f // we need the info for the memory
+    output logic stall_f, // we need the info for the memory
+    output logic flush_d
 );
 
     // WIRE DECLARATIONS
@@ -37,7 +38,7 @@ module cpu #(
     result_src_t result_src_e; // from control unit
     logic stall_d, stall_e, stall_m, stall_wb; // stalls for fetch, decode, execute, memory and writeback stages respectively
     // Flushes
-    logic flush_d, flush_e; // flush signals for decode and execute stages
+    logic flush_e; // flush signals for decode and execute stages
     // Forwards
     rd1_fwd_t rd1_fwd_sel_e;
     rd2_fwd_t rd2_fwd_sel_e;
@@ -120,6 +121,7 @@ module cpu #(
         .rd_addr_wb(rd_addr_wb),
         .reg_write_m(reg_write_m),
         .reg_write_wb(reg_write_w),
+        .readdatavalid(1'b1), // 1 cycle latency all the time
         .rs1_addr_d(rs1_addr_d),
         .rs2_addr_d(rs2_addr_d),
         .rd_addr_e(rd_addr_e),

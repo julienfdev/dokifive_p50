@@ -28,7 +28,8 @@ module dokifive_soc #(
         .mem_addr(mem_addr),
         .mem_data_w(mem_data_w),
         .mem_write(mem_write),
-        .stall_f(stall_f)
+        .stall_f(stall_f),
+        .flush_d(flush_d)
     );
 
     memory_controller #(
@@ -38,6 +39,7 @@ module dokifive_soc #(
         .clk(clk),
         .rst(rst),
         .stall_f(stall_f),
+        .flush_d(flush_d),
         .instr_addr(instr_addr),
         .instr_data(instr_data),
         .mem_write(mem_write),

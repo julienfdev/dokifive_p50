@@ -3,6 +3,11 @@ import types::*;
 module control_d_e_register(
     input logic clk, rst, en, clr,
 
+    // Debug input
+    input logic [31:0] instr_d, // Debug input
+    // Debug output
+    output logic [31:0] instr_e, // Debug output
+
     // Decode inputs
     input bool_t reg_write_d,
     input bool_t mem_write_d, jump_d, branch_d,
@@ -11,6 +16,7 @@ module control_d_e_register(
     input alu_src_a_sig_t alu_src_a_sig_d,
     input alu_src_b_sig_t alu_src_b_sig_d,
     input pc_target_src_t pc_target_src_d,
+    input branch_valid_src_t branch_valid_src_d,
 
     // Execute outputs
     output bool_t reg_write_e,
@@ -19,7 +25,8 @@ module control_d_e_register(
     output alu_op_t alu_op_e,
     output alu_src_a_sig_t alu_src_a_sig_e,
     output alu_src_b_sig_t alu_src_b_sig_e,
-    output pc_target_src_t pc_target_src_e
+    output pc_target_src_t pc_target_src_e,    
+    output branch_valid_src_t branch_valid_src_e
 
 );
 
@@ -43,6 +50,9 @@ assign alu_src_b_sig_e = alu_src_b_sig_t'(alu_src_b_sig_e_vec);
 
 logic [$bits(pc_target_src_t)-1:0] pc_target_src_e_vec;
 assign pc_target_src_e = pc_target_src_t'(pc_target_src_e_vec);
+
+logic [$bits(branch_valid_src_t)-1:0] branch_valid_src_e_vec;
+assign branch_valid_src_e = branch_valid_src_t'(branch_valid_src_e_vec);
 
 en_clr_arst_register #(
     .WIDTH(1)
@@ -137,6 +147,29 @@ en_clr_arst_register #(
 ) alu_src_a_sig_en_clr_arst_register_instance (
     .d(alu_src_a_sig_d),
     .q(alu_src_a_sig_e_vec),
+    .clk(clk),
+    .rst(rst),
+    .en(en),
+    .clr(clr)
+);
+
+en_clr_arst_register #(
+    .WIDTH($bits(branch_valid_src_t))
+) branch_valid_src_en_clr_arst_register_instance (
+    .d(branch_valid_src_d),
+    .q(branch_valid_src_e_vec),
+    .clk(clk),
+    .rst(rst),
+    .en(en),
+    .clr(clr)
+);
+
+// Debug output
+en_clr_arst_register #(
+    .WIDTH(32)
+) instr_e_en_clr_arst_register_instance (
+    .d(instr_d),
+    .q(instr_e),
     .clk(clk),
     .rst(rst),
     .en(en),

@@ -3,6 +3,11 @@ import types::*;
 module control_e_m_register(
     input logic clk, rst, en, clr,
 
+    // Debug input
+    input logic [31:0] instr_e, // Debug input
+    // Debug output
+    output logic [31:0] instr_m, // Debug output
+
     // Execute inputs
     input bool_t reg_write_e,
     input bool_t mem_write_e,
@@ -24,7 +29,7 @@ module control_e_m_register(
 
     // EXECUTE_MEMORY REGISTER
     en_clr_arst_register #(
-        .WIDTH(1)
+    .WIDTH(1)
     ) reg_write_e_m (
         .d(reg_write_e),
         .q(reg_write_m_vec),
@@ -35,7 +40,7 @@ module control_e_m_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH(1)
+    .WIDTH(1)
     ) mem_write_e_m (
         .d(mem_write_e),
         .q(mem_write_m_vec),
@@ -46,7 +51,7 @@ module control_e_m_register(
     );
 
     en_clr_arst_register #(
-        .WIDTH($bits(result_src_t))
+    .WIDTH($bits(result_src_t))
     ) result_src_e_m (
         .d(result_src_e),
         .q(result_src_m_vec),
@@ -55,5 +60,16 @@ module control_e_m_register(
         .en(en),
         .clr(clr)
     );
-    
+
+    en_clr_arst_register #(
+    .WIDTH(32)
+    ) en_clr_arst_register_instance (
+        .d(instr_e),
+        .q(instr_m),
+        .clk(clk),
+        .rst(rst),
+        .en(en),
+        .clr(clr)
+    );
+
 endmodule

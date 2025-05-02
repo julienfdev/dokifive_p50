@@ -42,6 +42,10 @@ alu_op_t alu_op_d;
 alu_src_a_sig_t alu_src_a_sig_d;
 alu_src_b_sig_t alu_src_b_sig_d;
 pc_target_src_t pc_target_src_d;
+branch_valid_src_t branch_valid_src_d;
+
+// Debug signals
+logic [31:0] instr_e, instr_m, instr_w; // Debug output, instruction to be executed
 
 // Execute
 bool_t reg_write_e;
@@ -70,7 +74,7 @@ main_decoder main_decoder_instance (
     .alu_src_b_sig(alu_src_b_sig_d),
     .immsrc(immsrc_d),
     .pc_target_src(pc_target_src_d),
-    .branch_valid_src(branch_valid_src_e)
+    .branch_valid_src(branch_valid_src_d)
 );
 
 // Alu decoder
@@ -87,6 +91,8 @@ control_d_e_register control_d_e_register_instance (
     .rst(rst),
     .en(~stall_e),
     .clr(flush_e),
+    .instr_d(instr_d),
+    .instr_e(instr_e),
     .reg_write_d(reg_write_d),
     .mem_write_d(mem_write_d),
     .jump_d(jump_d),
@@ -96,6 +102,7 @@ control_d_e_register control_d_e_register_instance (
     .alu_src_a_sig_d(alu_src_a_sig_d),
     .alu_src_b_sig_d(alu_src_b_sig_d),
     .pc_target_src_d(pc_target_src_d),
+    .branch_valid_src_d(branch_valid_src_d),
     .reg_write_e(reg_write_e),
     .mem_write_e(mem_write_e),
     .jump_e(jump_e),
@@ -104,7 +111,8 @@ control_d_e_register control_d_e_register_instance (
     .alu_op_e(alu_op_e),
     .alu_src_a_sig_e(alu_src_a_sig_e),
     .alu_src_b_sig_e(alu_src_b_sig_e),
-    .pc_target_src_e(pc_target_src_e)
+    .pc_target_src_e(pc_target_src_e),
+    .branch_valid_src_e(branch_valid_src_e)
 );
 
 // EXECUTE STAGE
@@ -117,6 +125,8 @@ control_e_m_register control_e_m_register_instance (
     .rst(rst),
     .en(~stall_m),
     .clr(1'b0), // No clear signal for the memory stage
+    .instr_e(instr_e),
+    .instr_m(instr_m),
     .reg_write_e(reg_write_e),
     .mem_write_e(mem_write_e),
     .result_src_e(result_src_e),
@@ -132,6 +142,8 @@ control_m_w_register control_m_w_register_instance (
     .rst(rst),
     .en(~stall_wb),
     .clr(1'b0), // No clear signal for the writeback stage
+    .instr_m(instr_m),
+    .instr_w(instr_w),
     .reg_write_m(reg_write_m),
     .result_src_m(result_src_m),
     .reg_write_w(reg_write_w),

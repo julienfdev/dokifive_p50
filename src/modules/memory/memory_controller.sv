@@ -8,7 +8,7 @@ module  memory_controller #(
 
     // Hazard signals
     input logic stall_f,
-    input logic flush_d,
+    input logic read_en, // we need a registered read_en (1 clock cycle behind !flush_d signal)
 
     // Port A, instruction memory
     input logic [31:0] instr_addr,
@@ -32,9 +32,9 @@ logic instruction_valid;
 always_comb begin
     instruction_valid = instr_addr >= INSTRUCTION_ROM_START && instr_addr < DATA_RAM_START;
     if(!instruction_valid) begin
-        instr_data = 32'hDEADBEEF;
-    end else if(flush_d) begin
-        instr_data = 32'b0;
+        instr_data = 'hDEADBEEF; // we're
+    end else if(!read_en) begin
+        instr_data = 'h0; // zero out the instruction, like we've done on the decode stage
     end else begin
         instr_data = instr_data_raw;
     end
@@ -105,6 +105,5 @@ gprmm_registers gprmm_registers_instance (
     .rdata(gprmm_read_raw),
     .GPREGS(GPREGS)
 );
-
 
 endmodule

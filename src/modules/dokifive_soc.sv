@@ -16,7 +16,21 @@ module dokifive_soc #(
     bool_t mem_write;
     logic stall_f;
     logic flush_d;
+    logic read_en;
     logic [31:0] instr_addr, instr_data, mem_addr, mem_data_r, mem_data_w;
+
+    // We need a registered flush_d signal (1 clock cycle behind !flush_d signal)
+    // Because our memory has a registered address but not a registered output
+    en_clr_arst_register #(
+        .WIDTH(1)
+    ) en_clr_arst_register_instance (
+        .d(~flush_d),
+        .q(read_en),
+        .clk(clk),
+        .rst(rst),
+        .en(~rst),
+        .clr(1'b0)
+    );
 
     cpu #(
     .INITIAL_RF(INITIAL_RF)
@@ -40,7 +54,7 @@ module dokifive_soc #(
         .clk(clk),
         .rst(rst),
         .stall_f(stall_f),
-        .flush_d(flush_d),
+        .read_en(read_en),
         .instr_addr(instr_addr),
         .instr_data(instr_data),
         .mem_write(mem_write),

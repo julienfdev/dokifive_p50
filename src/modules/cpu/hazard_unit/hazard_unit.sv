@@ -11,6 +11,9 @@ module hazard_unit(
     input  logic [4:0] rs1_addr_d, rs2_addr_d, rd_addr_e,
     input result_src_t result_src_e,
 
+    // Control Hazards
+    input pc_src_t pc_src_e,
+
     // Forwarding signals
     output rd1_fwd_t rd1_fwd_sel_e, // select signal for the first read data (rd1)
     output rd2_fwd_t rd2_fwd_sel_e, // select signal for the second read data (rd2)
@@ -23,13 +26,17 @@ module hazard_unit(
     assign stall_e = 1'b0;
     assign stall_m = 1'b0; // no stall for memory stage
     assign stall_wb = 1'b0; // no stall for writeback stage
-    assign flush_d = 1'b0;
+
+    // Control Hazard
+    logic control_hazard;
+    assign control_hazard = pc_src_e == PC_SRC_PC_TARGET;
 
     // Declaration
     logic lw_stall; // a load word stall induces a stall of f (and IW) and d registers, and introduces a bubble in e
     assign stall_f = lw_stall;
     assign stall_d = lw_stall;
-    assign flush_e = lw_stall;
+    assign flush_d = control_hazard;
+    assign flush_e = lw_stall | control_hazard;
     // STALL M and WB will be asserted by the cycle latency FSM when switching to BRAM
 
 

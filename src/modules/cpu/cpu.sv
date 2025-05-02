@@ -124,6 +124,7 @@ module cpu #(
         .rs2_addr_d(rs2_addr_d),
         .rd_addr_e(rd_addr_e),
         .result_src_e(result_src_e),
+        .pc_src_e(pc_src_e),
         .rd1_fwd_sel_e(rd1_fwd_sel_e),
         .rd2_fwd_sel_e(rd2_fwd_sel_e),
         .stall_f(stall_f),

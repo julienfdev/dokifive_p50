@@ -8,6 +8,7 @@ module  memory_controller #(
 
     // Hazard signals
     input logic stall_f,
+    input logic flush_d,
 
     // Port A, instruction memory
     input logic [31:0] instr_addr,
@@ -27,8 +28,18 @@ localparam DATA_RAM_START = 'h200;
 // Instruction
 logic [31:0] instr_data_raw;
 logic instruction_valid;
-assign instr_data = instruction_valid ? instr_data_raw : 32'hDEADBEEF;
-assign instruction_valid = instr_addr >= INSTRUCTION_ROM_START && instr_addr < DATA_RAM_START;
+
+always_comb begin
+    instruction_valid = instr_addr >= INSTRUCTION_ROM_START && instr_addr < DATA_RAM_START;
+    if(!instruction_valid) begin
+        instr_data = 32'hDEADBEEF;
+    end else if(flush_d) begin
+        instr_data = 32'b0;
+    end else begin
+        instr_data = instr_data_raw;
+    end
+end
+
 
 // RAM
 logic [31:0] mem_data_raw;

@@ -104,8 +104,8 @@ module datapath #(
         .clk(clk),
         .rst(rst),
         .en(~stall_f),
-        .clr(1'b0),
-        .pc_f(pc_f),
+        .clr(flush_d),
+        .pc_f(pc_f),  // Will be flushed with the iw_d register, that's what we want because of the RAM latency
         .pc_plus_4_f(pc_plus_4_f),
         .pc_iw(pc_iw),
         .pc_plus_4_iw(pc_plus_4_iw)

@@ -3,7 +3,7 @@ import types::*;
 module control_unit(
     input logic clk, rst, flush_e, stall_e, stall_m, stall_wb,  // Control signals
     input logic [31:0] instr_d, // Instruction to be decoded
-    input logic zero_e, // Zero flag from the ALU, used for branch/jump instructions
+    input logic branch_valid_e, // Zero flag from the ALU, used for branch/jump instructions
 
     output immsrc_t immsrc_d, // Immediate source for the decode stage
     output pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
@@ -15,6 +15,7 @@ module control_unit(
     output bool_t reg_write_w, // Register write signal, used to control the register file
     output result_src_t result_src_w, // Result source, used to select the source of the data to be written back to the register file
     output bool_t mem_write_m, // Memory write signal, now bool_t
+    output branch_valid_src_t branch_valid_src_e,
 
     // Hazard handling
     output result_src_t result_src_e
@@ -68,7 +69,8 @@ main_decoder main_decoder_instance (
     .alu_src_a_sig(alu_src_a_sig_d),
     .alu_src_b_sig(alu_src_b_sig_d),
     .immsrc(immsrc_d),
-    .pc_target_src(pc_target_src_d)
+    .pc_target_src(pc_target_src_d),
+    .branch_valid_src(branch_valid_src_e)
 );
 
 // Alu decoder
@@ -107,7 +109,7 @@ control_d_e_register control_d_e_register_instance (
 
 // EXECUTE STAGE
 // We need to assign PCSrcE
-assign pc_src_e = (branch_e & zero_e) | jump_e ? PC_SRC_PC_TARGET : PC_SRC_PC_PLUS_4; // PC source for branch/jump instructions
+assign pc_src_e = (branch_e & branch_valid_e) | jump_e ? PC_SRC_PC_TARGET : PC_SRC_PC_PLUS_4; // PC source for branch/jump instructions
 
 // EXECUTE_MEMORY REGISTER
 control_e_m_register control_e_m_register_instance (

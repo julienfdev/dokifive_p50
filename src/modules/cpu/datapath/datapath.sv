@@ -15,7 +15,7 @@ module datapath #(
     // Decode stage
     output logic [31:0] instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
     // Execute stage
-    output logic zero_e, // zero flag from the ALU, used for branch/jump instructions
+    output logic branch_valid_e, // zero flag from the ALU, used for branch/jump instructions
     // Memory stage
     output logic [31:0] mem_addr_m, // address for the data memory, used to read/write data from/to memory
     output logic [31:0] mem_data_w_m, // data to be written to memory, used to write data to memory
@@ -44,6 +44,7 @@ module datapath #(
     input alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
     input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
     input pc_target_src_t pc_target_src_sig_e,
+    input branch_valid_src_t branch_valid_src_e,
     // writeback
     input bool_t reg_write_w,
     input result_src_t result_src_w
@@ -67,6 +68,7 @@ module datapath #(
     logic [31:0] rd1_fwd_e, rd2_fwd_e; // operands for ALU, after forwarding
     logic [4:0] ra1_e, ra2_e, wa3_e; // source registers addresses
     logic [31:0] alu_src_a_e, alu_src_b_e, alu_result_e, w_data_e; // Alu result and write data from rd2_e (or forwared values)
+    logic zero_e;
 
     // MEMORY
     logic [31:0] alu_result_m, pc_plus_4_m, imm_ext_m; // ALU result and write data from rd2_e (or forwared values)
@@ -247,6 +249,17 @@ module datapath #(
         .alu_op(alu_op),
         .result(alu_result_e),
         .zero(zero_e) // zero flag for branch/jump instructions
+    );
+
+    mux4 #(
+        .WIDTH(1)
+    ) branch_valid_mux (
+        .s(branch_valid_src_e),
+        .a(zero_e),
+        .b(~zero_e),
+        .c(alu_result_e[0]),
+        .d(1'b0),
+        .out(branch_valid_e)
     );
 
     // EXECUTE_MEMORY REGISTER

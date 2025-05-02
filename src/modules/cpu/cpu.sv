@@ -19,12 +19,13 @@ module cpu #(
 
     // Control unit signals
     logic [31:0] instr_d; // Instruction to be decoded, must be forwarded to the control unit
-    logic zero_e; // zero flag from the ALU, used for branch/jump instructions
+    logic branch_valid_e; // zero flag from the ALU, used for branch/jump instructions
     // decode
     immsrc_t immsrc_d; // immediate source for the decode stage
     // execute
     pc_src_t pc_src_e;
     pc_target_src_t pc_target_src_sig_e; // PC source for branch/jump, used to switch between PC + 4 and the target address
+    branch_valid_src_t branch_valid_src_e;
     alu_src_a_sig_t alu_src_a_sig_e; // ALU source A, used to switch between rs1 and the PC (AUIPC)
     alu_src_b_sig_t alu_src_b_sig_e; // ALU source, used to switch between the second operand and the immediate value
     alu_op_t alu_op; // ALU operation, used to select the operation to be performed by the ALU
@@ -58,7 +59,7 @@ module cpu #(
         .mem_data_r_m(mem_data_r),
         .pc_f(pc_f),
         .instr_d(instr_d),
-        .zero_e(zero_e),
+        .branch_valid_e(branch_valid_e),
         .mem_addr_m(mem_addr),
         .mem_data_w_m(mem_data_w),
         .stall_f(stall_f),
@@ -83,6 +84,7 @@ module cpu #(
         .alu_src_b_sig_e(alu_src_b_sig_e),
         .alu_op(alu_op),
         .pc_target_src_sig_e(pc_target_src_sig_e),
+        .branch_valid_src_e(branch_valid_src_e),
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w)
     );
@@ -97,7 +99,7 @@ module cpu #(
         .stall_m(stall_m),
         .stall_wb(stall_wb),
         .instr_d(instr_d),
-        .zero_e(zero_e),
+        .branch_valid_e(branch_valid_e),
         .immsrc_d(immsrc_d),
         .pc_src_e(pc_src_e),
         .alu_src_a_sig_e(alu_src_a_sig_e),
@@ -108,6 +110,7 @@ module cpu #(
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w),
         .mem_write_m(mem_write),
+        .branch_valid_src_e(branch_valid_src_e),
         .result_src_e(result_src_e)
     );
 

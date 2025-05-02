@@ -13,7 +13,8 @@ module main_decoder(
     output alu_src_a_sig_t alu_src_a_sig,
     output alu_src_b_sig_t alu_src_b_sig,
     output immsrc_t immsrc,
-    output pc_target_src_t pc_target_src
+    output pc_target_src_t pc_target_src,
+    output branch_valid_src_t branch_valid_src
 );
 
     always_comb begin
@@ -27,6 +28,7 @@ module main_decoder(
         alu_src_b_sig = ALU_SRC_B_RS2;
         immsrc = IMMSRC_I_TYPE;
         pc_target_src = PC_TARGET_PC;
+        branch_valid_src = BRANCH_VALID_ZERO;
 
         case (opcode)
             OPCODE_LOAD: begin
@@ -40,6 +42,7 @@ module main_decoder(
                 alu_src_b_sig = ALU_SRC_B_IMM;
                 immsrc = IMMSRC_I_TYPE;
                 pc_target_src = PC_TARGET_PC; // We don't care
+                branch_valid_src = BRANCH_VALID_ZERO;
             end
             OPCODE_I_TYPE: begin
                 reg_write = TRUE;
@@ -57,6 +60,7 @@ module main_decoder(
                     default: immsrc = IMMSRC_I_TYPE;
                 endcase
                 pc_target_src = PC_TARGET_PC;
+                branch_valid_src = BRANCH_VALID_ZERO;
             end
             OPCODE_AUIPC: begin
                 reg_write = TRUE;
@@ -69,6 +73,7 @@ module main_decoder(
                 alu_src_b_sig = ALU_SRC_B_IMM;
                 immsrc = IMMSRC_U_TYPE;
                 pc_target_src = PC_TARGET_PC;
+                branch_valid_src = BRANCH_VALID_ZERO;
             end
             OPCODE_STORE: begin
                 reg_write = FALSE; // we discard the result after the mem stage because we don't care
@@ -81,6 +86,7 @@ module main_decoder(
                 alu_src_b_sig = ALU_SRC_B_IMM;
                 immsrc = IMMSRC_S_TYPE;
                 pc_target_src = PC_TARGET_PC;
+                branch_valid_src = BRANCH_VALID_ZERO;
             end
             OPCODE_R: begin
                 reg_write = TRUE;
@@ -93,6 +99,7 @@ module main_decoder(
                 alu_src_b_sig = ALU_SRC_B_RS2;
                 immsrc = IMMSRC_I_TYPE; // we don't care
                 pc_target_src = PC_TARGET_PC;
+                branch_valid_src = BRANCH_VALID_ZERO;
             end
             OPCODE_LUI: begin
                 reg_write = TRUE;
@@ -104,7 +111,8 @@ module main_decoder(
                 alu_src_a_sig = ALU_SRC_A_RS1; // We don't care
                 alu_src_b_sig = ALU_SRC_B_IMM; // We don't care
                 immsrc = IMMSRC_U_TYPE; // LUI uses U-Type immediate
-                pc_target_src = PC_TARGET_PC; // We don't care    
+                pc_target_src = PC_TARGET_PC; // We don't care
+                branch_valid_src = BRANCH_VALID_ZERO;    
             end
             OPCODE_BRANCH: begin
                 // Only handle BEQ for now, we'll need alu_result[0] and a funct3 and a multiplexer (branch_flag_src) on the control logic to chose between zero flag and alu_result[0]
@@ -118,7 +126,12 @@ module main_decoder(
                 alu_src_a_sig = ALU_SRC_A_RS1; // We use rs1 as the first operand
                 alu_src_b_sig = ALU_SRC_B_RS2; // We use rs2 as the second operand
                 immsrc = IMMSRC_B_TYPE;
-                pc_target_src = PC_TARGET_PC; // We use the PC + Imm as BTA 
+                pc_target_src = PC_TARGET_PC; // We use the PC + Imm as BTA
+                case(funct3)
+                    3'b000: branch_valid_src = BRANCH_VALID_ZERO;  // When beq, select the zero flag
+                    3'b001: branch_valid_src = BRANCH_VALID_ZEROB; // When bne, select the "not zero" flag
+                    default: branch_valid_src = BRANCH_VALID_ALU0; // in any other case, we look at the ALU result (BLT, BGE...)
+                endcase
             end
             OPCODE_JAL: begin
                 reg_write = TRUE; // we write PC+4 to RD

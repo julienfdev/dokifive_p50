@@ -79,4 +79,9 @@ package types;
         LW_NOT_LW,
         LW_WAITING_READVALID
     } lw_fsm_state_t;
+    typedef enum logic [1:0] {
+        BRANCH_VALID_ZERO = 2'b00,
+        BRANCH_VALID_ZEROB = 2'b01,
+        BRANCH_VALID_ALU0 = 2'b10
+    } branch_valid_src_t;
 endpackage

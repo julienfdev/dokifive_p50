@@ -15,6 +15,7 @@ module dokifive_soc #(
     // Wire definition
     bool_t mem_write;
     logic stall_f;
+    logic flush_d;
     logic [31:0] instr_addr, instr_data, mem_addr, mem_data_r, mem_data_w;
 
     cpu #(

@@ -342,6 +342,7 @@ set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name SYSTEMVERILOG_FILE modules/packages/io.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/packages/types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/packages/signals.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/control_unit/main_decoder.sv
@@ -353,6 +354,9 @@ set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/control_unit/alu_deco
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/register_file.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/m_w_register.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/iw_d_register.sv
+set_global_assignment -name SYSTEMVERILOG_FILE modules/memory/instruction_memory.sv
+set_global_assignment -name SYSTEMVERILOG_FILE modules/memory/gprmm_registers.sv
+set_global_assignment -name SYSTEMVERILOG_FILE modules/memory/data_memory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/imm_extender.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/f_iw_register.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/e_m_register.sv
@@ -360,8 +364,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/datapath.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/d_e_register.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/datapath/alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/cpu.sv
-set_global_assignment -name SYSTEMVERILOG_FILE modules/memory/mocks/instruction_memory.sv
-set_global_assignment -name SYSTEMVERILOG_FILE modules/memory/mocks/data_memory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/memory/memory_controller.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/muxes/mux8.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/muxes/mux4.sv
@@ -369,4 +371,5 @@ set_global_assignment -name SYSTEMVERILOG_FILE modules/muxes/mux2.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/sync/en_clr_arst_register.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/dokifive_soc.sv
 set_global_assignment -name SDC_FILE dokifive_p50_top.SDC
+set_global_assignment -name SYSTEMVERILOG_FILE dokifive_p50_top.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

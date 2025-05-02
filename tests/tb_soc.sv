@@ -1,10 +1,11 @@
 `timescale 10ps/1ps
+import io::*;
 
 module tb_soc;
     // Clock and reset
     logic clk = 0;
     logic rst = 1;
-    logic [31:0] seven_segments;
+    GPREGS_T GPREGS;
 
     // SoC instance
     dokifive_soc #(
@@ -14,7 +15,7 @@ module tb_soc;
     ) uut  (
         .clk(clk),
         .rst(rst),
-        .seven_segment_display(seven_segments)
+        .GPREGS(GPREGS)
     );
 
     // Clock generation

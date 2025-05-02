@@ -1,4 +1,5 @@
 import types::*;
+import io::*;
 
 module dokifive_soc #(
     parameter INITIAL_RF = "",
@@ -8,7 +9,7 @@ module dokifive_soc #(
     input logic clk, rst,
 
     // Memory mapped IO
-    output logic [31:0] seven_segment_display
+    output GPREGS_T GPREGS
 );
 
     // Wire definition
@@ -40,7 +41,7 @@ module dokifive_soc #(
         .mem_addr(mem_addr),
         .mem_write_data(mem_data_w),
         .mem_read_data(mem_data_r),
-        .seven_segment_display(seven_segment_display)
+        .GPREGS(GPREGS)
     );
 
 endmodule

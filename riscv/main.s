@@ -2,7 +2,7 @@
 .equ _start, 0x00000000
 # RAM address space
 .equ RAM_START, 0x200
-.equ SEVEN_SEG_ADDR, 0x400
+.equ SEVEN_SEG_ADDR, 0x300
 
 
 

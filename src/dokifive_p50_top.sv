@@ -57,14 +57,17 @@ module dokifive_p50_top(
 	//=======================================================
 	//  REG/WIRE declarations
 	//=======================================================
+	logic clk_div;
 
 	GPREGS_T GPREGS;
-	assign HEX0 = { 1'b1, GPREGS.GPR1 };
-	assign HEX1 = { 1'b1, GPREGS.GPR1 >> 4};
-	assign HEX2 = { 1'b1, GPREGS.GPR1 >> 8};
-	assign HEX3 = { 1'b1, GPREGS.GPR1 >> 12};
-	assign HEX4 = { 1'b1, GPREGS.GPR1 >> 16};
-	assign HEX5 = { 1'b1, GPREGS.GPR1 >> 20};
+	logic [6:0] seg0, seg1, seg2, seg3, seg4, seg5;
+	assign HEX0 = {1'b1, seg0};
+	assign HEX1 = {1'b1, seg1};
+	assign HEX2 = {1'b1, seg2};
+	assign HEX3 = {1'b1, seg3};
+	assign HEX4 = {1'b1, seg4};
+	assign HEX5 = {1'b1, seg5};
+	assign LEDR = GPREGS.GPR1[9:0];
 
 	//=======================================================
 	//  Structural coding
@@ -72,11 +75,43 @@ module dokifive_p50_top(
 	dokifive_soc #(
 	.INITIAL_MOCK_INSTR("instr_init.mem")
 	) dokifive_soc_instance (
-		.clk(ADC_CLK_10),
+		.clk(clk_div),
 		.rst(~KEY[0]),
 		.GPREGS(GPREGS)
 	);
 
+	// Seven segment decoders
+	sevenseg sevenseg_0 (
+		.data(GPREGS.GPR1),
+		.segments(seg0)
+	);
+	sevenseg sevenseg_1 (
+		.data(GPREGS.GPR1 >> 4),
+		.segments(seg1)
+	);
+	sevenseg sevenseg_2 (
+		.data(GPREGS.GPR1 >> 8),
+		.segments(seg2)
+	);
+	sevenseg sevenseg_3 (
+		.data(GPREGS.GPR1 >> 12),
+		.segments(seg3)
+	);
+	sevenseg sevenseg_4 (
+		.data(GPREGS.GPR1 >> 16),
+		.segments(seg4)
+	);
+	sevenseg sevenseg_5 (
+		.data(GPREGS.GPR1 >> 20),
+		.segments(seg5)
+	);
 
+	clock_divider #(
+		.WIDTH(18)
+	) clock_divider_instance (
+		.clk(ADC_CLK_10),
+		.rst(~KEY[0]),
+		.div_clk(clk_div)
+	);
 
 endmodule

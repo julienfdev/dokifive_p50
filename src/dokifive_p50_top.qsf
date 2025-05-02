@@ -2,7 +2,7 @@
 # Build by Terasic System Builder
 #============================================================
 
-set_global_assignment -name FAMILY "MAX 10 FPGA"
+set_global_assignment -name FAMILY "MAX 10"
 set_global_assignment -name DEVICE 10M50DAF484C7G
 set_global_assignment -name TOP_LEVEL_ENTITY "dokifive_p50_top"
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "16.0.0"
@@ -344,6 +344,8 @@ set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name SYSTEMVERILOG_FILE modules/packages/io.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/packages/types.sv
+set_global_assignment -name SYSTEMVERILOG_FILE peripherals/sevenseg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE peripherals/clock_divider.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/packages/signals.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/control_unit/main_decoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/cpu/control_unit/control_unit.sv
@@ -372,4 +374,13 @@ set_global_assignment -name SYSTEMVERILOG_FILE modules/sync/en_clr_arst_register
 set_global_assignment -name SYSTEMVERILOG_FILE modules/dokifive_soc.sv
 set_global_assignment -name SDC_FILE dokifive_p50_top.SDC
 set_global_assignment -name SYSTEMVERILOG_FILE dokifive_p50_top.sv
+set_global_assignment -name ENABLE_OCT_DONE OFF
+set_global_assignment -name EXTERNAL_FLASH_FALLBACK_ADDRESS 00000000
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE IMAGE WITH ERAM"
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

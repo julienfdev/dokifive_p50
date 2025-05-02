@@ -3,14 +3,35 @@ import types::*;
 module hazard_unit(
     input logic clk, rst, // will be used for the Memory FSM
     // Input signals
+    // Forwarding
     input  logic [4:0] rs1_addr_e, rs2_addr_e, // rs1 and rs2 addresses from the execute stage
     input  logic [4:0] rd_addr_m, rd_addr_wb, // rd address from the memory and writeback stages
     input  bool_t       reg_write_m, reg_write_wb, // reg_write signals from the memory and writeback stages
+    // Stalls
+    input  logic [4:0] rs1_addr_d, rs2_addr_d, rd_addr_e,
+    input result_src_t result_src_e,
 
     // Forwarding signals
     output rd1_fwd_t rd1_fwd_sel_e, // select signal for the first read data (rd1)
-    output rd2_fwd_t rd2_fwd_sel_e // select signal for the second read data (rd2)
+    output rd2_fwd_t rd2_fwd_sel_e, // select signal for the second read data (rd2)
+
+    // Stalls signals
+    output logic stall_f, stall_d, stall_e, stall_m, stall_wb, flush_d, flush_e
 );
+
+    // Debugging
+    assign stall_e = 1'b0;
+    assign stall_m = 1'b0; // no stall for memory stage
+    assign stall_wb = 1'b0; // no stall for writeback stage
+    assign flush_d = 1'b0;
+
+    // Declaration
+    logic lw_stall; // a load word stall induces a stall of f (and IW) and d registers, and introduces a bubble in e
+    assign stall_f = lw_stall;
+    assign stall_d = lw_stall;
+    assign flush_e = lw_stall;
+    // STALL M and WB will be asserted by the cycle latency FSM when switching to BRAM
+
 
     // Forwarding logic
     always_comb begin
@@ -35,6 +56,13 @@ module hazard_unit(
             rd2_fwd_sel_e = RD2_FWD_WB;
         end
     end
+
+    // Stall detection, will be asserted for 1 clock cycle as we're introducing a bubble in E
+    // read latency will be handled by the state machine when we switch to BRAM
+    assign lw_stall = (result_src_e == RESULT_SRC_MEM) && ((rs1_addr_d == rd_addr_e) ||  (rs2_addr_d == rd_addr_e));
+    
+
+    // TODO FSM for cycle
 
 
 endmodule

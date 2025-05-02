@@ -6,6 +6,8 @@ module  memory_controller #(
 ) (
     input logic clk, rst,
 
+    // Hazard signals
+    input logic stall_f,
 
     // Port A, instruction memory
     input logic [31:0] instr_addr,
@@ -31,6 +33,7 @@ assign instruction_valid = instr_addr >= INSTRUCTION_ROM_START && instr_addr < D
 // RAM
 logic [31:0] mem_data_raw;
 logic data_valid;
+assign data_valid = mem_addr >= DATA_RAM_START && mem_addr < GPRMMSTART;
 bool_t write_valid;
 assign write_valid = (data_valid && mem_write == TRUE) ? TRUE : FALSE;
 // GPRMM
@@ -55,6 +58,7 @@ instruction_memory #(
 ) instruction_memory_instance (
     .clk(clk),
     .rst(rst),
+    .en(~stall_f),
     .addr(instr_addr >> 2), // Word aligned
     .rdata(instr_data_raw)
 );

@@ -11,7 +11,7 @@ module data_memory #(
     output logic [31:0] rdata
 );
 
-    logic [31:0] data[0:31]; // 1k registers
+    (* ramstyle = "logic" *) logic [31:0] data[0:31]; // 1k registers, let's assume combinational logic for stall handling first
 
     assign rdata = data[addr];
 
@@ -21,7 +21,7 @@ module data_memory #(
         end
     end
 
-    initial begin 
+    initial begin
         if(INITIAL != "") begin
             $display("Initializing data memory from %s", INITIAL);
             $readmemh(INITIAL, data);

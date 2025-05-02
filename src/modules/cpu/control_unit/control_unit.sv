@@ -14,7 +14,10 @@ module control_unit(
     output bool_t reg_write_m, // for hazard handling
     output bool_t reg_write_w, // Register write signal, used to control the register file
     output result_src_t result_src_w, // Result source, used to select the source of the data to be written back to the register file
-    output bool_t mem_write_m // Memory write signal, now bool_t
+    output bool_t mem_write_m, // Memory write signal, now bool_t
+
+    // Hazard handling
+    output result_src_t result_src_e
 );
 
 logic [6:0] opcode_d; // Opcode from the instruction
@@ -41,7 +44,6 @@ pc_target_src_t pc_target_src_d;
 
 // Execute
 bool_t reg_write_e;
-result_src_t result_src_e;
 bool_t mem_write_e;
 bool_t jump_e;
 bool_t branch_e;

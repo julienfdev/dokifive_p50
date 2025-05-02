@@ -4,7 +4,7 @@ import types::*;
 module instruction_memory #(
     INITIAL = ""
 ) (
-    input clk, rst,
+    input clk, rst, en,
     input logic [4:0] addr,
     output logic [31:0] rdata
 );
@@ -13,7 +13,7 @@ module instruction_memory #(
     logic [4:0] reg_addr;
 
     always_ff @(posedge clk) begin
-        if(!rst) begin
+        if(!rst && en) begin
             reg_addr <= addr;
         end
     end

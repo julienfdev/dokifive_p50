@@ -14,6 +14,7 @@ module dokifive_soc #(
 
     // Wire definition
     bool_t mem_write;
+    logic stall_f;
     logic [31:0] instr_addr, instr_data, mem_addr, mem_data_r, mem_data_w;
 
     cpu #(
@@ -26,7 +27,8 @@ module dokifive_soc #(
         .instr_addr(instr_addr),
         .mem_addr(mem_addr),
         .mem_data_w(mem_data_w),
-        .mem_write(mem_write)
+        .mem_write(mem_write),
+        .stall_f(stall_f)
     );
 
     memory_controller #(
@@ -35,6 +37,7 @@ module dokifive_soc #(
     ) memory_controller_instance (
         .clk(clk),
         .rst(rst),
+        .stall_f(stall_f),
         .instr_addr(instr_addr),
         .instr_data(instr_data),
         .mem_write(mem_write),

@@ -32,6 +32,8 @@ module datapath #(
     input rd2_fwd_t rd2_fwd_sel_e, // select signal for the second read data (rd2)
     output logic [4:0] rs1_addr_e, rs2_addr_e, // rs1 and rs2 addresses from the execute stage
     output  logic [4:0] rd_addr_m, rd_addr_wb, // rd address from the memory and writeback stages
+    // Stall signals
+    output logic [4:0] rs1_addr_d, rs2_addr_d, rd_addr_e,
 
     // Control Unit signals
     // decode
@@ -101,7 +103,7 @@ module datapath #(
     f_iw_register f_iw_register_instance ( // waste one clock cycle for the instruction to arrive from memory
         .clk(clk),
         .rst(rst),
-        .en(1'b1),
+        .en(~stall_f),
         .clr(1'b0),
         .pc_f(pc_f),
         .pc_plus_4_f(pc_plus_4_f),
@@ -127,6 +129,10 @@ module datapath #(
     assign ra1_d = instr_d[19:15]; // rs1 is instr_d[19:15]
     assign ra2_d = instr_d[24:20]; // rs2 is instr_d[24:20]
     assign wa3_d = instr_d[11:7]; // rd is instr_d[11:7]
+
+    // Hazard unit assignment
+    assign rs1_addr_d = ra1_d;
+    assign rs2_addr_d = ra2_d;
 
     register_file #(
     .INITIAL(INITIAL_RF)
@@ -175,6 +181,7 @@ module datapath #(
     // Hazard Unit assignments
     assign rs1_addr_e = ra1_e;
     assign rs2_addr_e = ra2_e;
+    assign rd_addr_e = wa3_e;
 
     // PC Target calculation
     logic [31:0] pc_target_sum_e;
@@ -194,7 +201,7 @@ module datapath #(
 
     // forwarding logic
     mux4 #(
-        .WIDTH(32)
+    .WIDTH(32)
     ) rd1_fwd_mux (
         .s(rd1_fwd_sel_e),
         .a(rd1_e),
@@ -204,7 +211,7 @@ module datapath #(
         .out(rd1_fwd_e)
     );
     mux4 #(
-        .WIDTH(32)
+    .WIDTH(32)
     ) rd2_fwd_mux (
         .s(rd2_fwd_sel_e),
         .a(rd2_e),
@@ -216,7 +223,7 @@ module datapath #(
     // forwarding logic
 
     mux2 #(
-        .WIDTH(32)
+    .WIDTH(32)
     ) alu_src_a_mux (
         .s(alu_src_a_sig_e),
         .a(rd1_fwd_e),

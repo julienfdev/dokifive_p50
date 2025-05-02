@@ -10,9 +10,12 @@
 _start:
 lui s0, 0x1 # t0 = zero + 1337
 addi s0, s0, 823
-increment_segment:
 sw s0, SEVEN_SEG_ADDR(zero)
-addi s0, s0, 1
+increment_segment:
+lw t2, SEVEN_SEG_ADDR(zero)
+addi s1, t2, 1
+sw s1, SEVEN_SEG_ADDR(zero)
+addi s1, zero, 0 # back to zero to ensure it's LW and SW that do the job
 j increment_segment
 nop
 nop

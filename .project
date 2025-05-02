@@ -37,5 +37,10 @@
 			<type>2</type>
 			<locationURI>sigasiresource:/vhdl/2008/STD</locationURI>
 		</link>
+		<link>
+			<name>Common Libraries/altera_mf_ver</name>
+			<type>2</type>
+			<locationURI>SIGASI_LIBRARY_ALTERA_MF_VER</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>

@@ -74,15 +74,27 @@ instruction_memory #(
     .rdata(instr_data_raw)
 );
 
-data_memory #(
-    .INITIAL(INITIAL_MOCK_DATA)
-) data_memory_instance (
-    .clk(clk),
-    .we(write_valid),
-    .addr(mem_addr >> 2),
-    .wdata(mem_write_data),
-    .rdata(mem_data_raw)
-);
+// data_memory #(
+//     .INITIAL(INITIAL_MOCK_DATA)
+// ) data_memory_instance (
+//     .clk(clk),
+//     .rst(rst),
+//     .we(write_valid),
+//     .addr(mem_addr >> 2),
+//     .wdata(mem_write_data),
+//     .rdata(mem_data_raw)
+// );
+
+// 16kbits of BRAM
+data_bram	data_bram_inst (
+	.address(mem_addr >> 2),
+	.byteena(4'b1), // No masking
+	.clock (clk),
+	.data (mem_write_data),
+	.wren (write_valid),
+	.q (mem_data_raw)
+	);
+
 
 gprmm_registers gprmm_registers_instance (
     .clk(clk),

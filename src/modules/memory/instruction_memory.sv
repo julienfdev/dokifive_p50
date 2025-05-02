@@ -9,7 +9,7 @@ module instruction_memory #(
     output logic [31:0] rdata
 );
 
-    logic [31:0] data[0:31]; // 1k registers
+    (* ramstyle = "M9K" *) logic [31:0] data[0:31]; // 1k registers
     logic [4:0] reg_addr;
 
     always_ff @(posedge clk) begin

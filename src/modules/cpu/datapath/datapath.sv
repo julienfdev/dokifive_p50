@@ -27,6 +27,11 @@ module datapath #(
     // Flushes
     input logic flush_d,
     input logic flush_e,
+    // Forwarding signals
+    input rd1_fwd_t rd1_fwd_sel_e, // select signal for the first read data (rd1)
+    input rd2_fwd_t rd2_fwd_sel_e, // select signal for the second read data (rd2)
+    output logic [4:0] rs1_addr_e, rs2_addr_e, // rs1 and rs2 addresses from the execute stage
+    output  logic [4:0] rd_addr_m, rd_addr_wb, // rd address from the memory and writeback stages
 
     // Control Unit signals
     // decode
@@ -56,7 +61,8 @@ module datapath #(
     logic [31:0] pc_d, pc_plus_4_d;
     // EXECUTE
     logic [31:0] pc_e, pc_plus_4_e, imm_ext_e, pc_target_e, pc_target_src_e;
-    logic [31:0] rd1_e, rd2_e; // operands for ALU
+    logic [31:0] rd1_e, rd2_e; // operands for ALU, before forwarding
+    logic [31:0] rd1_fwd_e, rd2_fwd_e; // operands for ALU, after forwarding
     logic [4:0] ra1_e, ra2_e, wa3_e; // source registers addresses
     logic [31:0] alu_src_a_e, alu_src_b_e, alu_result_e, w_data_e; // Alu result and write data from rd2_e (or forwared values)
 
@@ -166,6 +172,9 @@ module datapath #(
     );
 
     // EXECUTE STAGE
+    // Hazard Unit assignments
+    assign rs1_addr_e = ra1_e;
+    assign rs2_addr_e = ra2_e;
 
     // PC Target calculation
     logic [31:0] pc_target_sum_e;
@@ -181,13 +190,36 @@ module datapath #(
         .out(pc_target_src_e)
     );
 
-    assign w_data_e = rd2_e; // write data for the data memory
+    assign w_data_e = rd2_fwd_e; // write data for the data memory, after forwarding
+
+    // forwarding logic
+    mux4 #(
+        .WIDTH(32)
+    ) rd1_fwd_mux (
+        .s(rd1_fwd_sel_e),
+        .a(rd1_e),
+        .b(result_w),
+        .c(alu_result_m),
+        .d(32'hDEADBEEF),
+        .out(rd1_fwd_e)
+    );
+    mux4 #(
+        .WIDTH(32)
+    ) rd2_fwd_mux (
+        .s(rd2_fwd_sel_e),
+        .a(rd2_e),
+        .b(result_w),
+        .c(alu_result_m),
+        .d(32'hDEADBEEF),
+        .out(rd2_fwd_e)
+    );
+    // forwarding logic
 
     mux2 #(
         .WIDTH(32)
     ) alu_src_a_mux (
         .s(alu_src_a_sig_e),
-        .a(rd1_e),
+        .a(rd1_fwd_e),
         .b(pc_e),
         .out(alu_src_a_e)
     );
@@ -196,7 +228,7 @@ module datapath #(
     .WIDTH(32)
     ) alu_src_b_mux (
         .s(alu_src_b_sig_e),
-        .a(rd2_e),
+        .a(rd2_fwd_e),
         .b(imm_ext_e),
         .out(alu_src_b_e)
     );
@@ -229,6 +261,8 @@ module datapath #(
     );
 
     // MEMORY STAGE
+    // Hazard unit assignments
+    assign rd_addr_m = wa3_m;
     // Memory stage is simpler, as the bulk of the work is done outside of the datapath, eveything is already declared
     assign mem_addr_m = alu_result_m; // write address for the data memory
 
@@ -251,6 +285,9 @@ module datapath #(
     );
 
     // WRITE BACK STAGE
+    // Hazard unit assignments
+    assign rd_addr_wb = wa3_w;
+
     mux4 #(
     .WIDTH(32)
     ) wb_mux (

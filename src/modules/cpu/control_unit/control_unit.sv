@@ -11,6 +11,7 @@ module control_unit(
     output alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
     output alu_op_t alu_op_e, // ALU operation, used to select the operation to be performed by the ALU
     output pc_target_src_t pc_target_src_e,
+    output bool_t reg_write_m, // for hazard handling
     output bool_t reg_write_w, // Register write signal, used to control the register file
     output result_src_t result_src_w, // Result source, used to select the source of the data to be written back to the register file
     output bool_t mem_write_m // Memory write signal, now bool_t
@@ -46,7 +47,6 @@ bool_t jump_e;
 bool_t branch_e;
 
 // Memory
-bool_t reg_write_m;
 result_src_t result_src_m;
 
 

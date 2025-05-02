@@ -35,6 +35,11 @@ module cpu #(
     logic stall_f, stall_d, stall_e, stall_m, stall_wb; // stalls for fetch, decode, execute, memory and writeback stages respectively
     // Flushes
     logic flush_d, flush_e; // flush signals for decode and execute stages
+    // Forwards
+    rd1_fwd_t rd1_fwd_sel_e;
+    rd2_fwd_t rd2_fwd_sel_e;
+    logic [4:0] rs1_addr_e, rs2_addr_e, rd_addr_m, rd_addr_wb;
+    bool_t reg_write_m;
 
     // TODO plug stalls and flushes to the hazard unit, for  now, assigning default values
     assign stall_f = 1'b0; // no stall for fetch stage
@@ -68,6 +73,12 @@ module cpu #(
         .stall_wb(stall_wb),
         .flush_d(flush_d),
         .flush_e(flush_e),
+        .rd1_fwd_sel_e(rd1_fwd_sel_e),
+        .rd2_fwd_sel_e(rd2_fwd_sel_e),
+        .rs1_addr_e(rs1_addr_e),
+        .rs2_addr_e(rs2_addr_e),
+        .rd_addr_m(rd_addr_m),
+        .rd_addr_wb(rd_addr_wb),
         .immsrc_d(immsrc_d),
         .pc_src_e(pc_src_e),
         .alu_src_a_sig_e(alu_src_a_sig_e),
@@ -95,8 +106,23 @@ module cpu #(
         .alu_src_b_sig_e(alu_src_b_sig_e),
         .alu_op_e(alu_op),
         .pc_target_src_e(pc_target_src_sig_e),
+        .reg_write_m(reg_write_m),
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w),
         .mem_write_m(mem_write)
+    );
+
+    // Hazard unit
+    hazard_unit hazard_unit_instance (
+        .clk(clk),
+        .rst(rst),
+        .rs1_addr_e(rs1_addr_e),
+        .rs2_addr_e(rs2_addr_e),
+        .rd_addr_m(rd_addr_m),
+        .rd_addr_wb(rd_addr_wb),
+        .reg_write_m(reg_write_m),
+        .reg_write_wb(reg_write_w),
+        .rd1_fwd_sel_e(rd1_fwd_sel_e),
+        .rd2_fwd_sel_e(rd2_fwd_sel_e)
     );
 endmodule

@@ -65,4 +65,14 @@ package types;
         OPCODE_JALR = 7'd103,
         OPCODE_JAL = 7'd111
     } opcode_t; // Opcode for the instruction
+    typedef enum logic [1:0] {
+        RD1_FWD_NONE = 2'b00, // No forwarding
+        RD1_FWD_WB = 2'b01, // Forwarding from WB stage
+        RD1_FWD_MEM = 2'b10 // Forwarding from MEM stage 
+    } rd1_fwd_t; // Select signal for the first read data (rd1)
+    typedef enum logic [1:0] {
+        RD2_FWD_NONE = 2'b00, // No forwarding
+        RD2_FWD_WB = 2'b01, // Forwarding from WB stage
+        RD2_FWD_MEM = 2'b10 // Forwarding from MEM stage 
+    } rd2_fwd_t; // Select signal for the second read data (rd2)
 endpackage

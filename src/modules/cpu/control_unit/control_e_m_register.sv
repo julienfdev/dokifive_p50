@@ -1,26 +1,25 @@
 import types::*;
 
 module control_e_m_register(
-    input logic clk, rst, en, clr,
-
+    input   logic           clk, rst, en, clr,
     // Debug input
-    input logic [31:0] instr_e, // Debug input
+    input   logic [31:0]    instr_e, // Debug input
     // Debug output
-    output logic [31:0] instr_m, // Debug output
+    output  logic [31:0]    instr_m, // Debug output
 
     // Execute inputs
-    input bool_t reg_write_e,
-    input bool_t mem_write_e,
-    input result_src_t result_src_e,
-    input logic byte_half_enable_e, // Byte/half enable signal, used for byte/half instructions
-    input logic [2:0] funct3_e, // funct3 field from the instruction, used for byte/half instructions
+    input   bool_t          reg_write_e,
+    input   bool_t          mem_write_e,
+    input   result_src_t    result_src_e,
+    input   logic           byte_half_enable_e, // Byte/half enable signal, used for byte/half instructions
+    input   logic [2:0]     funct3_e, // funct3 field from the instruction, used for byte/half instructions
 
     // Memory outputs
-    output bool_t reg_write_m,
-    output bool_t mem_write_m,
-    output result_src_t result_src_m,
-    output logic byte_half_enable_m, // Byte/half enable signal, used for byte/half instructions
-    output logic [2:0] funct3_m // funct3 field from the instruction, used for byte/half instructions
+    output  bool_t          reg_write_m,
+    output  bool_t          mem_write_m,
+    output  result_src_t    result_src_m,
+    output  logic           byte_half_enable_m, // Byte/half enable signal, used for byte/half instructions
+    output  logic [2:0]     funct3_m // funct3 field from the instruction, used for byte/half instructions
 );
 
     // Intermediate logic vectors

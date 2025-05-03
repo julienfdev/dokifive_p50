@@ -1,90 +1,85 @@
 import types::*;
 
-module datapath #(
-    parameter INITIAL_RF = ""
-)(
-    input logic clk, rst,
-    // Fetch
-    input logic [31:0] instr_iw, // instruction fetched from memory
-    // Memory
-    input logic [31:0] mem_data_r_m, // data read from memory
-
+module datapath(
+    input   logic               clk, rst,
+    input   logic [31:0]        instr_iw, // instruction fetched from memory
+    input   logic [31:0]        mem_data_r_m, // data read from memory
     // OUTPUTS
     // Fetch stage
-    output logic [31:0] pc_f, // it's fed before the clock edge to the memory controller because the memory is registered
+    output  logic [31:0]        pc_f, // it's fed before the clock edge to the memory controller because the memory is registered
     // Decode stage
-    output logic [31:0] instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
+    output  logic [31:0]        instr_d, // Instruction to be decoded, must be forwarded to the control unit as well as used by the decode stage
     // Execute stage
-    output logic branch_valid_e, // zero flag from the ALU, used for branch/jump instructions
+    output  logic               branch_valid_e, // zero flag from the ALU, used for branch/jump instructions
     // Memory stage
-    output logic [31:0] mem_addr_m, // address for the data memory, used to read/write data from/to memory
-    output logic [31:0] mem_data_w_m, // data to be written to memory, used to write data to memory
+    output  logic [31:0]        mem_addr_m, // address for the data memory, used to read/write data from/to memory
+    output  logic [31:0]        mem_data_w_m, // data to be written to memory, used to write data to memory
 
     // Hazard Unit signals
     // Stalls
-    input logic stall_f, // stalls, the fetch stall should also be propagated to the instruction memory controller
-    input logic stall_d, stall_e, stall_m, stall_wb, // stalls for decode, execute, memory and writeback stages respectively, 
+    input   logic               stall_f, // stalls, the fetch stall should also be propagated to the instruction memory controller
+    input   logic               stall_d, stall_e, stall_m, stall_wb, // stalls for decode, execute, memory and writeback stages respectively, 
     // Flushes
-    input logic flush_d,
-    input logic flush_e,
+    input logic                 flush_d,
+    input logic                 flush_e,
     // Forwarding signals
-    input rd1_fwd_t rd1_fwd_sel_e, // select signal for the first read data (rd1)
-    input rd2_fwd_t rd2_fwd_sel_e, // select signal for the second read data (rd2)
-    output logic [4:0] rs1_addr_e, rs2_addr_e, // rs1 and rs2 addresses from the execute stage
-    output  logic [4:0] rd_addr_m, rd_addr_wb, // rd address from the memory and writeback stages
+    input rd1_fwd_t             rd1_fwd_sel_e, // select signal for the first read data (rd1)
+    input rd2_fwd_t             rd2_fwd_sel_e, // select signal for the second read data (rd2)
+    output  logic [4:0]         rs1_addr_e, rs2_addr_e, // rs1 and rs2 addresses from the execute stage
+    output  logic [4:0]         rd_addr_m, rd_addr_wb, // rd address from the memory and writeback stages
     // Stall signals
-    output logic [4:0] rs1_addr_d, rs2_addr_d, rd_addr_e,
+    output  logic [4:0]         rs1_addr_d, rs2_addr_d, rd_addr_e,
 
     // Control Unit signals
     // decode
-    input immsrc_t immsrc_d,
+    input immsrc_t              immsrc_d,
     // execute
-    input pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
-    input alu_src_a_sig_t alu_src_a_sig_e, // ALU source A, used to switch between rs1 and the PC (AUIPC)
-    input alu_src_b_sig_t alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
-    input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
-    input pc_target_src_t pc_target_src_sig_e,
-    input branch_valid_src_t branch_valid_src_e,
+    input pc_src_t              pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
+    input alu_src_a_sig_t       alu_src_a_sig_e, // ALU source A, used to switch between rs1 and the PC (AUIPC)
+    input alu_src_b_sig_t       alu_src_b_sig_e, // ALU source, used to switch between the second operand and the immediate value
+    input alu_op_t              alu_op, // ALU operation, used to select the operation to be performed by the ALU
+    input pc_target_src_t       pc_target_src_sig_e,
+    input branch_valid_src_t    branch_valid_src_e,
     // memory
-    input byte_half_sel_t byte_half_sel_m, // Byte/half select signal, used for byte/half instructions
-    input word_ext_t word_ext_m, // Word extension signal, used for byte/half instructions
-    input result_src_t result_src_m,
+    input byte_half_sel_t       byte_half_sel_m, // Byte/half select signal, used for byte/half instructions
+    input word_ext_t            word_ext_m, // Word extension signal, used for byte/half instructions
+    input result_src_t          result_src_m,
     // writeback
-    input bool_t reg_write_w,
-    input result_src_t result_src_w
+    input bool_t                reg_write_w,
+    input result_src_t          result_src_w
     // Control signals
 );
     // INTERNAL DATAPATH SIGNALS
     // FETCH
-    logic [31:0] pc_fnext, pc_plus_4_f;
+    logic [31:0]    pc_fnext, pc_plus_4_f;
     // INSTRUCTION WAIT
     // Instruction Wait stage
-    logic [31:0] pc_iw; // PC to be used in the instruction wait stage, must be forwarded to the decode stage
-    logic [31:0] pc_plus_4_iw; // PC + 4, used to calculate the target address for branch/jump instructions
+    logic [31:0]    pc_iw; // PC to be used in the instruction wait stage, must be forwarded to the decode stage
+    logic [31:0]    pc_plus_4_iw; // PC + 4, used to calculate the target address for branch/jump instructions
 
     // DECODE
-    logic [31:0] rd1_d, rd2_d, imm_ext_d;
-    logic [4:0] ra1_d, ra2_d, wa3_d; // source registers addresses
-    logic [31:0] pc_d, pc_plus_4_d;
+    logic [31:0]    rd1_d, rd2_d, imm_ext_d;
+    logic [4:0]     ra1_d, ra2_d, wa3_d; // source registers addresses
+    logic [31:0]    pc_d, pc_plus_4_d;
     // EXECUTE
-    logic [31:0] pc_e, pc_plus_4_e, imm_ext_e, pc_target_e, pc_target_src_e;
-    logic [31:0] rd1_e, rd2_e; // operands for ALU, before forwarding
-    logic [31:0] rd1_fwd_e, rd2_fwd_e; // operands for ALU, after forwarding
-    logic [4:0] ra1_e, ra2_e, wa3_e; // source registers addresses
-    logic [31:0] alu_src_a_e, alu_src_b_e, alu_result_e, w_data_e; // Alu result and write data from rd2_e (or forwared values)
-    logic zero_e;
+    logic [31:0]    pc_e, pc_plus_4_e, imm_ext_e, pc_target_e, pc_target_src_e;
+    logic [31:0]    rd1_e, rd2_e; // operands for ALU, before forwarding
+    logic [31:0]    rd1_fwd_e, rd2_fwd_e; // operands for ALU, after forwarding
+    logic [4:0]     ra1_e, ra2_e, wa3_e; // source registers addresses
+    logic [31:0]    alu_src_a_e, alu_src_b_e, alu_result_e, w_data_e; // Alu result and write data from rd2_e (or forwared values)
+    logic           zero_e;
 
     // MEMORY
-    logic [31:0] forwarded_value_m; // alu_result_m if result_src is not IMM
-    logic [31:0] alu_result_m, pc_plus_4_m, imm_ext_m; // ALU result and write data from rd2_e (or forwared values)
-    logic [4:0] wa3_m; // write address for the register file
-    logic [31:0] mem_data_w_m_raw;
-    logic [31:0] mem_data_r_m_ext; // data to be written to memory, after shifting logic
+    logic [31:0]    forwarded_value_m; // alu_result_m if result_src is not IMM
+    logic [31:0]    alu_result_m, pc_plus_4_m, imm_ext_m; // ALU result and write data from rd2_e (or forwared values)
+    logic [4:0]     wa3_m; // write address for the register file
+    logic [31:0]    mem_data_w_m_raw;
+    logic [31:0]    mem_data_r_m_ext; // data to be written to memory, after shifting logic
 
     // WRITEBACK
-    logic [4:0] wa3_w; // write address for the register file
-    logic [31:0] result_w; // result to be written back to the register file
-    logic [31:0] r_data_w, pc_plus_4_w, alu_result_w, imm_ext_w; // Multiplexer inputs for the writeback stage
+    logic [4:0]     wa3_w; // write address for the register file
+    logic [31:0]    result_w; // result to be written back to the register file
+    logic [31:0]    r_data_w, pc_plus_4_w, alu_result_w, imm_ext_w; // Multiplexer inputs for the writeback stage
 
     // LOGIC
     // FETCH STAGE
@@ -144,9 +139,7 @@ module datapath #(
     assign rs1_addr_d = ra1_d;
     assign rs2_addr_d = ra2_d;
 
-    register_file #(
-    .INITIAL(INITIAL_RF)
-    ) rf (
+    register_file rf (
         .clk(~clk), // register file is clocked on the falling edge of the clock for simultaneous read/write operations
         .we3(reg_write_w), // write enable signal, comes from the writeback stage
         .ra1(ra1_d),
@@ -189,14 +182,14 @@ module datapath #(
 
     // EXECUTE STAGE
     // Hazard Unit assignments
-    assign rs1_addr_e = ra1_e;
-    assign rs2_addr_e = ra2_e;
-    assign rd_addr_e = wa3_e;
+    assign rs1_addr_e   = ra1_e;
+    assign rs2_addr_e   = ra2_e;
+    assign rd_addr_e    = wa3_e;
 
     // PC Target calculation
-    logic [31:0] pc_target_sum_e;
-    assign pc_target_sum_e = (pc_target_src_e + imm_ext_e); // PC target for branch/jump instructions
-    assign pc_target_e = {pc_target_sum_e[31:1], 1'b0 }; // PC target for branch/jump instructions, zeroing the LSB
+    logic [31:0]    pc_target_sum_e;
+    assign          pc_target_sum_e  = (pc_target_src_e + imm_ext_e); // PC target for branch/jump instructions
+    assign          pc_target_e      = {pc_target_sum_e[31:1], 1'b0 }; // PC target for branch/jump instructions, zeroing the LSB
     // 
     mux2 #(
     .WIDTH(32)
@@ -292,8 +285,8 @@ module datapath #(
     // Hazard unit assignments
     assign rd_addr_m = wa3_m;
     // Memory stage is simpler, as the bulk of the work is done outside of the datapath, eveything is already declared
-    assign mem_addr_m = alu_result_m; // write address for the data memory
-    assign forwarded_value_m = (result_src_m == RESULT_SRC_IMM) ? imm_ext_m : alu_result_m; // ALU result if result_src is not IMM
+    assign mem_addr_m           = alu_result_m; // write address for the data memory
+    assign forwarded_value_m    = (result_src_m == RESULT_SRC_IMM) ? imm_ext_m : alu_result_m; // ALU result if result_src is not IMM
 
     // Byte store unit
     byte_store_unit byte_store_unit_instance (

@@ -1,11 +1,11 @@
 module d_e_register(
-    input logic clk, rst, en, clr,
+    input logic         clk, rst, en, clr,
     // input nets
-    input logic [31:0] rd1_d, rd2_d, imm_ext_d, pc_d, pc_plus_4_d,
-    input logic [4:0] ra1_d, ra2_d, wa3_d, // source registers addresses
+    input logic [31:0]  rd1_d, rd2_d, imm_ext_d, pc_d, pc_plus_4_d,
+    input logic [4:0]   ra1_d, ra2_d, wa3_d, // source registers addresses
     // output nets
     output logic [31:0] rd1_e, rd2_e, imm_ext_e, pc_e, pc_plus_4_e,
-    output logic [4:0] ra1_e, ra2_e, wa3_e // source registers addresses
+    output logic [4:0]  ra1_e, ra2_e, wa3_e // source registers addresses
 );
 
     // DECODE_EXECUTE REGISTER

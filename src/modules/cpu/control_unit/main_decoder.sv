@@ -1,175 +1,175 @@
 import types::*;
 
 module main_decoder(
-    input logic [6:0] opcode,
-    input logic [2:0] funct3,
+    input   logic [6:0]         opcode,
+    input   logic [2:0]         funct3,
 
-    output bool_t reg_write,
-    output result_src_t result_src,
-    output bool_t mem_write,
-    output bool_t jump,
-    output bool_t branch,
-    output alu_control_t alu_control,
-    output alu_src_a_sig_t alu_src_a_sig,
-    output alu_src_b_sig_t alu_src_b_sig,
-    output immsrc_t immsrc,
-    output pc_target_src_t pc_target_src,
-    output branch_valid_src_t branch_valid_src,
-    output logic byte_half_enable_d
+    output  bool_t              reg_write,
+    output  result_src_t        result_src,
+    output  bool_t              mem_write,
+    output  bool_t              jump,
+    output  bool_t              branch,
+    output  alu_control_t       alu_control,
+    output  alu_src_a_sig_t     alu_src_a_sig,
+    output  alu_src_b_sig_t     alu_src_b_sig,
+    output  immsrc_t            immsrc,
+    output  pc_target_src_t     pc_target_src,
+    output  branch_valid_src_t  branch_valid_src,
+    output  logic               byte_half_enable_d
 );
 
     always_comb begin
-        reg_write = FALSE;
-        result_src = RESULT_SRC_ALU;
-        mem_write = FALSE;
-        jump = FALSE;
-        branch = FALSE;
-        alu_control = ALU_CONTROL_ADD;
-        alu_src_a_sig = ALU_SRC_A_RS1;
-        alu_src_b_sig = ALU_SRC_B_RS2;
-        immsrc = IMMSRC_I_TYPE;
-        pc_target_src = PC_TARGET_PC;
-        branch_valid_src = BRANCH_VALID_ZERO;
-        byte_half_enable_d = 1'b0; // Default value for byte/half enable signal
+        reg_write           = FALSE;
+        result_src          = RESULT_SRC_ALU;
+        mem_write           = FALSE;
+        jump                = FALSE;
+        branch              = FALSE;
+        alu_control         = ALU_CONTROL_ADD;
+        alu_src_a_sig       = ALU_SRC_A_RS1;
+        alu_src_b_sig       = ALU_SRC_B_RS2;
+        immsrc              = IMMSRC_I_TYPE;
+        pc_target_src       = PC_TARGET_PC;
+        branch_valid_src    = BRANCH_VALID_ZERO;
+        byte_half_enable_d  = 1'b0; // Default value for byte/half enable signal
 
         case (opcode)
             OPCODE_LOAD: begin
-                reg_write  = TRUE;
-                result_src = RESULT_SRC_MEM;
-                mem_write = FALSE;
-                jump = FALSE;
-                branch = FALSE;
-                alu_control = ALU_CONTROL_ADD;
-                alu_src_a_sig = ALU_SRC_A_RS1;
-                alu_src_b_sig = ALU_SRC_B_IMM;
-                immsrc = IMMSRC_I_TYPE;
-                pc_target_src = PC_TARGET_PC; // We don't care
-                branch_valid_src = BRANCH_VALID_ZERO;
-                byte_half_enable_d = 1'b1; // Enable byte/half extension for load instructions
+                reg_write           = TRUE;
+                result_src          = RESULT_SRC_MEM;
+                mem_write           = FALSE;
+                jump                = FALSE;
+                branch              = FALSE;
+                alu_control         = ALU_CONTROL_ADD;
+                alu_src_a_sig       = ALU_SRC_A_RS1;
+                alu_src_b_sig       = ALU_SRC_B_IMM;
+                immsrc              = IMMSRC_I_TYPE;
+                pc_target_src       = PC_TARGET_PC; // We don't care
+                branch_valid_src    = BRANCH_VALID_ZERO;
+                byte_half_enable_d  = 1'b1; // Enable byte/half extension for load instructions
             end
             OPCODE_I_TYPE: begin
-                reg_write = TRUE;
-                result_src = RESULT_SRC_ALU;
-                mem_write = FALSE;
-                jump = FALSE;
-                branch = FALSE;
-                alu_control = ALU_CONTROL_ITYPE; // We delegate the operation control to the ALU decoder
-                alu_src_a_sig = ALU_SRC_A_RS1; // We use rs1 as the first operand
-                alu_src_b_sig = ALU_SRC_B_IMM; // We use the immediate
+                reg_write           = TRUE;
+                result_src          = RESULT_SRC_ALU;
+                mem_write           = FALSE;
+                jump                = FALSE;
+                branch              = FALSE;
+                alu_control         = ALU_CONTROL_ITYPE; // We delegate the operation control to the ALU decoder
+                alu_src_a_sig       = ALU_SRC_A_RS1; // We use rs1 as the first operand
+                alu_src_b_sig       = ALU_SRC_B_IMM; // We use the immediate
                 case(funct3) // We look at funct3 to chose between I or UI type immediate decoding
                 // UIMM for SLLI, SRLI, SRAI (SRLI and SRAI both have funct3 101)
-                    3'b001: immsrc = IMMSRC_UI_TYPE;
-                    3'b101: immsrc = IMMSRC_UI_TYPE;
+                    3'b001: immsrc  = IMMSRC_UI_TYPE;
+                    3'b101: immsrc  = IMMSRC_UI_TYPE;
                     default: immsrc = IMMSRC_I_TYPE;
                 endcase
-                pc_target_src = PC_TARGET_PC;
-                branch_valid_src = BRANCH_VALID_ZERO;
-                byte_half_enable_d = 1'b0; 
+                pc_target_src       = PC_TARGET_PC;
+                branch_valid_src    = BRANCH_VALID_ZERO;
+                byte_half_enable_d  = 1'b0;
             end
             OPCODE_AUIPC: begin
-                reg_write = TRUE;
-                result_src = RESULT_SRC_ALU;
-                mem_write = FALSE;
-                jump = FALSE;
-                branch = FALSE;
-                alu_control = ALU_CONTROL_ADD; // Add upper immediate to program counter
-                alu_src_a_sig = ALU_SRC_A_PC;
-                alu_src_b_sig = ALU_SRC_B_IMM;
-                immsrc = IMMSRC_U_TYPE;
-                pc_target_src = PC_TARGET_PC;
-                branch_valid_src = BRANCH_VALID_ZERO;
-                byte_half_enable_d = 1'b0; // No byte/half extension for AUIPC
+                reg_write           = TRUE;
+                result_src          = RESULT_SRC_ALU;
+                mem_write           = FALSE;
+                jump                = FALSE;
+                branch              = FALSE;
+                alu_control         = ALU_CONTROL_ADD; // Add upper immediate to program counter
+                alu_src_a_sig       = ALU_SRC_A_PC;
+                alu_src_b_sig       = ALU_SRC_B_IMM;
+                immsrc              = IMMSRC_U_TYPE;
+                pc_target_src       = PC_TARGET_PC;
+                branch_valid_src    = BRANCH_VALID_ZERO;
+                byte_half_enable_d  = 1'b0; // No byte/half extension for AUIPC
             end
             OPCODE_STORE: begin
-                reg_write = FALSE; // we discard the result after the mem stage because we don't care
-                result_src = RESULT_SRC_ALU; // We don't care
-                mem_write = TRUE;
-                jump = FALSE;
-                branch = FALSE;
-                alu_control = ALU_CONTROL_ADD; // we add rs1 with the immediate
-                alu_src_a_sig = ALU_SRC_A_RS1;
-                alu_src_b_sig = ALU_SRC_B_IMM;
-                immsrc = IMMSRC_S_TYPE;
-                pc_target_src = PC_TARGET_PC;
-                branch_valid_src = BRANCH_VALID_ZERO;
-                byte_half_enable_d = 1'b1; // Enable byte/half extension for store instructions
+                reg_write           = FALSE; // we discard the result after the mem stage because we don't care
+                result_src          = RESULT_SRC_ALU; // We don't care
+                mem_write           = TRUE;
+                jump                = FALSE;
+                branch              = FALSE;
+                alu_control         = ALU_CONTROL_ADD; // we add rs1 with the immediate
+                alu_src_a_sig       = ALU_SRC_A_RS1;
+                alu_src_b_sig       = ALU_SRC_B_IMM;
+                immsrc              = IMMSRC_S_TYPE;
+                pc_target_src       = PC_TARGET_PC;
+                branch_valid_src    = BRANCH_VALID_ZERO;
+                byte_half_enable_d  = 1'b1; // Enable byte/half extension for store instructions
             end
             OPCODE_R: begin
-                reg_write = TRUE;
-                result_src = RESULT_SRC_ALU;
-                mem_write = FALSE;
-                jump = FALSE;
-                branch = FALSE;
-                alu_control = ALU_CONTROL_RTYPE;
-                alu_src_a_sig = ALU_SRC_A_RS1;
-                alu_src_b_sig = ALU_SRC_B_RS2;
-                immsrc = IMMSRC_I_TYPE; // we don't care
-                pc_target_src = PC_TARGET_PC;
-                branch_valid_src = BRANCH_VALID_ZERO;
-                byte_half_enable_d = 1'b0; // No byte/half extension for R-type instructions
+                reg_write           = TRUE;
+                result_src          = RESULT_SRC_ALU;
+                mem_write           = FALSE;
+                jump                = FALSE;
+                branch              = FALSE;
+                alu_control         = ALU_CONTROL_RTYPE;
+                alu_src_a_sig       = ALU_SRC_A_RS1;
+                alu_src_b_sig       = ALU_SRC_B_RS2;
+                immsrc              = IMMSRC_I_TYPE; // we don't care
+                pc_target_src       = PC_TARGET_PC;
+                branch_valid_src    = BRANCH_VALID_ZERO;
+                byte_half_enable_d  = 1'b0; // No byte/half extension for R-type instructions
             end
             OPCODE_LUI: begin
-                reg_write = TRUE;
-                result_src = RESULT_SRC_IMM;
-                mem_write = FALSE;
-                jump = FALSE;
-                branch = FALSE;
-                alu_control = ALU_CONTROL_ADD; // We don't care
-                alu_src_a_sig = ALU_SRC_A_RS1; // We don't care
-                alu_src_b_sig = ALU_SRC_B_IMM; // We don't care
-                immsrc = IMMSRC_U_TYPE; // LUI uses U-Type immediate
-                pc_target_src = PC_TARGET_PC; // We don't care
-                branch_valid_src = BRANCH_VALID_ZERO;    
-                byte_half_enable_d = 1'b0; // No byte/half extension for LUI
+                reg_write           = TRUE;
+                result_src          = RESULT_SRC_IMM;
+                mem_write           = FALSE;
+                jump                = FALSE;
+                branch              = FALSE;
+                alu_control         = ALU_CONTROL_ADD; // We don't care
+                alu_src_a_sig       = ALU_SRC_A_RS1; // We don't care
+                alu_src_b_sig       = ALU_SRC_B_IMM; // We don't care
+                immsrc              = IMMSRC_U_TYPE; // LUI uses U-Type immediate
+                pc_target_src       = PC_TARGET_PC; // We don't care
+                branch_valid_src    = BRANCH_VALID_ZERO;
+                byte_half_enable_d  = 1'b0; // No byte/half extension for LUI
             end
             OPCODE_BRANCH: begin
                 // Only handle BEQ for now, we'll need alu_result[0] and a funct3 and a multiplexer (branch_flag_src) on the control logic to chose between zero flag and alu_result[0]
                 // PCTarget is calculated by the execute stage by the PC adder so we're not using the MEM and WB stage
-                reg_write = FALSE;
-                result_src = RESULT_SRC_ALU; // We don't care
-                mem_write = FALSE;
-                jump = FALSE;
-                branch = TRUE;
-                alu_control = ALU_CONTROL_BTYPE;
-                alu_src_a_sig = ALU_SRC_A_RS1; // We use rs1 as the first operand
-                alu_src_b_sig = ALU_SRC_B_RS2; // We use rs2 as the second operand
-                immsrc = IMMSRC_B_TYPE;
-                pc_target_src = PC_TARGET_PC; // We use the PC + Imm as BTA
+                reg_write           = FALSE;
+                result_src          = RESULT_SRC_ALU; // We don't care
+                mem_write           = FALSE;
+                jump                = FALSE;
+                branch              = TRUE;
+                alu_control         = ALU_CONTROL_BTYPE;
+                alu_src_a_sig       = ALU_SRC_A_RS1; // We use rs1 as the first operand
+                alu_src_b_sig       = ALU_SRC_B_RS2; // We use rs2 as the second operand
+                immsrc              = IMMSRC_B_TYPE;
+                pc_target_src       = PC_TARGET_PC; // We use the PC + Imm as BTA
                 case(funct3)
-                    3'b000: branch_valid_src = BRANCH_VALID_ZERO;  // When beq, select the zero flag
-                    3'b001: branch_valid_src = BRANCH_VALID_ZEROB; // When bne, select the "not zero" flag
-                    default: branch_valid_src = BRANCH_VALID_ALU0; // in any other case, we look at the ALU result (BLT, BGE...)
+                    3'b000: branch_valid_src    = BRANCH_VALID_ZERO; // When beq, select the zero flag
+                    3'b001: branch_valid_src    = BRANCH_VALID_ZEROB; // When bne, select the "not zero" flag
+                    default: branch_valid_src   = BRANCH_VALID_ALU0; // in any other case, we look at the ALU result (BLT, BGE...)
                 endcase
-                byte_half_enable_d = 1'b0; // No byte/half extension for branch instructions
+                byte_half_enable_d  = 1'b0; // No byte/half extension for branch instructions
             end
             OPCODE_JAL: begin
-                reg_write = TRUE; // we write PC+4 to RD
-                result_src = RESULT_SRC_PC_PLUS_4;
-                mem_write = FALSE;
-                jump = TRUE;
-                branch = FALSE;
-                alu_control = ALU_CONTROL_ADD; // We don't care, we're not using the result
-                alu_src_a_sig = ALU_SRC_A_RS1; // We don't care
-                alu_src_b_sig = ALU_SRC_B_RS2; // We don't care
-                immsrc = IMMSRC_J_TYPE; // J-Type immediate, label is 20 bit immediate
-                pc_target_src = PC_TARGET_PC; // We use the PC + imm as JTA
-                branch_valid_src = BRANCH_VALID_ZERO; // We don't care
-                byte_half_enable_d = 1'b0; // No byte/half extension for JAL
-                
+                reg_write           = TRUE; // we write PC+4 to RD
+                result_src          = RESULT_SRC_PC_PLUS_4;
+                mem_write           = FALSE;
+                jump                = TRUE;
+                branch              = FALSE;
+                alu_control         = ALU_CONTROL_ADD; // We don't care, we're not using the result
+                alu_src_a_sig       = ALU_SRC_A_RS1; // We don't care
+                alu_src_b_sig       = ALU_SRC_B_RS2; // We don't care
+                immsrc              = IMMSRC_J_TYPE; // J-Type immediate, label is 20 bit immediate
+                pc_target_src       = PC_TARGET_PC; // We use the PC + imm as JTA
+                branch_valid_src    = BRANCH_VALID_ZERO; // We don't care
+                byte_half_enable_d  = 1'b0; // No byte/half extension for JAL
+
             end
             OPCODE_JALR: begin
-                reg_write = TRUE; // We write PC+4 to RD
-                result_src = RESULT_SRC_PC_PLUS_4;
-                mem_write = FALSE;
-                jump = TRUE;
-                branch = FALSE;
-                alu_control = ALU_CONTROL_ADD; // We're not using the ALU
-                alu_src_a_sig = ALU_SRC_A_RS1; // We don't care
-                alu_src_b_sig = ALU_SRC_B_RS2; // We don't care
-                immsrc = IMMSRC_I_TYPE; // JALR uses I-Type immediate
-                pc_target_src = PC_TARGET_RS1; // We use RS1 + imm as our JTA
-                branch_valid_src = BRANCH_VALID_ZERO; // We don't care
-                byte_half_enable_d = 1'b0; // No byte/half extension for JALR
+                reg_write           = TRUE; // We write PC+4 to RD
+                result_src          = RESULT_SRC_PC_PLUS_4;
+                mem_write           = FALSE;
+                jump                = TRUE;
+                branch              = FALSE;
+                alu_control         = ALU_CONTROL_ADD; // We're not using the ALU
+                alu_src_a_sig       = ALU_SRC_A_RS1; // We don't care
+                alu_src_b_sig       = ALU_SRC_B_RS2; // We don't care
+                immsrc              = IMMSRC_I_TYPE; // JALR uses I-Type immediate
+                pc_target_src       = PC_TARGET_RS1; // We use RS1 + imm as our JTA
+                branch_valid_src    = BRANCH_VALID_ZERO; // We don't care
+                byte_half_enable_d  = 1'b0; // No byte/half extension for JALR
             end
             default: ; // Use default values
         endcase

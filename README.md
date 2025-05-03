@@ -1,12 +1,12 @@
-# Dokifive P50: RISC-V CPU for DE10-Lite
+# DokiFive P50: RISC-V CPU for DE10-Lite
 
 ## Overview
-Dokifive P50 is a custom RISC-V RV32I CPU core designed for the Intel/Altera DE10-Lite FPGA board. The CPU implements the full RV32I instruction set architecture, supporting all base integer instructions, including arithmetic, logic, control flow, memory access, and system instructions. The design is modular, with a clear separation between datapath, control unit, hazard handling, and memory subsystems.
+DokiFive P50 is a custom RISC-V RV32I CPU core designed for the Intel/Altera DE10-Lite FPGA board. The CPU implements the full RV32I instruction set architecture, supporting all base integer instructions, including arithmetic, logic, control flow, memory access, and system instructions. The design is modular, with a clear separation between datapath, control unit, hazard handling, and memory subsystems.
 
 The core can easily be edited to run on different hardware, juste make sure to replace the instruction and data memory with your vendor IP.
 
 ## CPU Architecture
-The CPU is a classic 5-stage pipeline (Fetch, Decode, Execute, Memory, Writeback), but modified to accomodate real hardware BRAM timings (it has an added Instruction Wait pipeline stage) with hazard detection and forwarding logic. The Hazard Unit implements an FSM that can easily be extended to support slower memory (using the `readdatavalid` logic signal)
+The CPU is a classic 5-stage pipeline (Fetch, Decode, Execute, Memory, Writeback) RISC-V processor, but modified to accomodate real hardware BRAM timings (it has an additional "Instruction Wait" pipeline stage) with hazard detection and forwarding logic. The Hazard Unit implements an FSM that can easily be extended to support slower memory (using the `readdatavalid` logic signal)
 
 It features:
 - Full support for RV32I, including all load/store, branch, jump, and arithmetic instructions.
@@ -29,7 +29,7 @@ General purpose registers are synchronous write, combinational read.
 Addresses outside these ranges return undefined or default values (e.g., 0xDEADBEEF for unmapped memory).
 
 ## FPGA Integration (DE10-Lite)
-The top-level module (`dokifive_p50_top`) instantiates the CPU and connects it to on-chip memory, SDRAM, and peripherals (LEDs, switches, 7-segment displays, VGA, Arduino headers). Pin assignments and I/O standards are defined in the Quartus `.qsf` file for the DE10-Lite board. The memory controller provides access to instruction and data memory, as well as memory-mapped I/O for peripherals.
+The top-level module (`DokiFive_p50_top`) instantiates the CPU and connects it to on-chip memory, SDRAM, and peripherals (LEDs, switches, 7-segment displays, VGA, Arduino headers). Pin assignments and I/O standards are defined in the Quartus `.qsf` file for the DE10-Lite board. The memory controller provides access to instruction and data memory, as well as memory-mapped I/O for peripherals.
 
 ## Simulation and Testing
 The `simulation/` folder contains ModelSim/Questa simulation project files, testbenches, and memory initialization files. The testbench (`tb_soc.sv`) simulates the SoC, including the CPU and memory system. You can run simulations to verify correct execution of RISC-V programs and observe CPU behavior.

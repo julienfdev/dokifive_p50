@@ -3,34 +3,31 @@ import io::*;
 module  memory_controller #(
     parameter INITIAL_MOCK_INSTR = ""
 ) (
-    input logic clk, rst,
-
+    input logic             clk, rst,
     // Hazard signals
-    input logic stall_f,
-    input logic read_en, // we need a registered read_en (1 clock cycle behind !flush_d signal)
+    input   logic           stall_f,
+    input   logic           read_en, // we need a registered read_en (1 clock cycle behind !flush_d signal)
 
     // Port A, instruction memory
-    input logic [31:0] instr_addr,
-    output logic [31:0] instr_data,
-
+    input   logic [31:0]    instr_addr,
+    output  logic [31:0]    instr_data,
     // Port B, data memory
-    input bool_t mem_write,
-    input logic [31:0] mem_addr, mem_write_data,
-    output logic [31:0] mem_read_data,
-    input byte_half_sel_t byteenablea,
+    input   bool_t          mem_write,
+    input   logic [31:0]    mem_addr, mem_write_data,
+    output  logic [31:0]    mem_read_data,
+    input   byte_half_sel_t byteenablea,
 
-    output GPREGS_T GPREGS
+    // Memory mapped IO
+    output GPREGS_T         GPREGS
 );
-// for now, we reset the PC at 8000 because we don't have a bootloader yet,
-//but instruction rom itself starts at 'h0 
-localparam INSTRUCTION_ROM_START = 'h0; 
-localparam INSTRUCTION_ROM_END = 'h10000;  // 64KB of ROM
-localparam DATA_RAM_START = 'h10000000;
-localparam DATA_RAM_END = 'h10008000; // 32KB of RAM
+localparam INSTRUCTION_ROM_START    = 'h0; 
+localparam INSTRUCTION_ROM_END      = 'h10000;  // 64KB of ROM
+localparam DATA_RAM_START           = 'h10000000;
+localparam DATA_RAM_END             = 'h10008000; // 32KB of RAM
 
 // Instruction
-logic [31:0] instr_data_raw;
-logic instruction_valid;
+logic [31:0]    instr_data_raw;
+logic           instruction_valid;
 
 always_comb begin
     instruction_valid = instr_addr >= INSTRUCTION_ROM_START && instr_addr < INSTRUCTION_ROM_END;
@@ -45,11 +42,11 @@ end
 
 
 // RAM
-logic [31:0] mem_data_raw;
-logic data_valid;
-assign data_valid = mem_addr >= DATA_RAM_START && mem_addr < DATA_RAM_END;
-bool_t write_valid;
-assign write_valid = (data_valid && mem_write == TRUE) ? TRUE : FALSE;
+logic [31:0]    mem_data_raw;
+logic           data_valid;
+bool_t          write_valid;
+assign data_valid   = mem_addr >= DATA_RAM_START && mem_addr < DATA_RAM_END;
+assign write_valid  = (data_valid && mem_write == TRUE) ? TRUE : FALSE;
 // GPRMM
 logic [31:0] gprmm_read_raw;
 
@@ -57,7 +54,6 @@ logic [31:0] gprmm_read_raw;
 // MEM READ DATA MULTIPLEXER
 always_comb begin
     mem_read_data = 32'hDEADBEEF;
-
     if(mem_addr >= DATA_RAM_START && mem_addr < DATA_RAM_END ) begin
         mem_read_data = mem_data_raw;
     end else if (mem_addr >= GPRMMSTART && mem_addr < GPRMMEND) begin

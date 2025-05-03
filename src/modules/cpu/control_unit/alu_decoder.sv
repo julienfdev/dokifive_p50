@@ -4,7 +4,7 @@ module alu_decoder(
     input alu_control_t alu_control,
     input logic         funct7_5,
     input logic [2:0]   funct3,
-    output alu_op_t alu_op
+    output alu_op_t     alu_op
 );
 
     always_comb begin

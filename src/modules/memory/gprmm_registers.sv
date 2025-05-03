@@ -2,13 +2,13 @@ import io::*;
 
 module gprmm_registers(
     // Signals
-    input logic clk, rst, wen,
+    input logic             clk, rst, wen,
     // Inputs
-    input logic [31:0] rwaddr,
-    input logic [31:0] wdata,
+    input logic     [31:0]  rwaddr,
+    input logic     [31:0]  wdata,
     // Outputs
-    output logic [31:0] rdata,
-    output GPREGS_T GPREGS
+    output logic    [31:0]  rdata,
+    output GPREGS_T         GPREGS
 );
 
     // Address space checking
@@ -35,9 +35,9 @@ module gprmm_registers(
             rdata = wdata;
         end else begin
             case(rwaddr)
-                GPRMM1 : rdata = GPREGS.GPR1;
-                GPRMM2 : rdata = GPREGS.GPR2;
-                default : rdata = 32'hDEADBEEF;
+                GPRMM1 :    rdata = GPREGS.GPR1;
+                GPRMM2 :    rdata = GPREGS.GPR2;
+                default :   rdata = 32'hDEADBEEF;
             endcase
         end
     end

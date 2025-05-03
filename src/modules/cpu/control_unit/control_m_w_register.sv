@@ -1,20 +1,17 @@
 import types::*;
 
 module control_m_w_register(
-    input logic clk, rst, en, clr,
-
+    input   logic           clk, rst, en, clr,
     // Debug input
-    input logic [31:0] instr_m, // Debug input
+    input   logic [31:0]    instr_m, // Debug input
     // Debug output
-    output logic [31:0] instr_w, // Debug output
-
+    output  logic [31:0]    instr_w, // Debug output
     // Memory inputs
-    input bool_t reg_write_m,
-    input result_src_t result_src_m,
-
+    input   bool_t          reg_write_m,
+    input   result_src_t    result_src_m,
     // Writeback outputs
-    output bool_t reg_write_w,
-    output result_src_t result_src_w
+    output  bool_t          reg_write_w,
+    output  result_src_t    result_src_w
 );
 
     // Intermediate logic vectors

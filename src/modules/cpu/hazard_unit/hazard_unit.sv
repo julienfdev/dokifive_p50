@@ -1,41 +1,41 @@
 import types::*;
 
 module hazard_unit(
-    input logic clk, rst, // will be used for the Memory FSM
+    input logic         clk, rst, // will be used for the Memory FSM
     // Input signals
     // Forwarding
-    input  logic [4:0] rs1_addr_e, rs2_addr_e, // rs1 and rs2 addresses from the execute stage
-    input  logic [4:0] rd_addr_m, rd_addr_wb, // rd address from the memory and writeback stages
+    input  logic [4:0]  rs1_addr_e, rs2_addr_e, // rs1 and rs2 addresses from the execute stage
+    input  logic [4:0]  rd_addr_m, rd_addr_wb, // rd address from the memory and writeback stages
     input  bool_t       reg_write_m, reg_write_wb, // reg_write signals from the memory and writeback stages
     // Stalls
-    input logic readdatavalid,
-    input  logic [4:0] rs1_addr_d, rs2_addr_d, rd_addr_e,
-    input result_src_t result_src_e,
+    input logic         readdatavalid,
+    input logic [4:0]   rs1_addr_d, rs2_addr_d, rd_addr_e,
+    input result_src_t  result_src_e,
 
     // Control Hazards
-    input pc_src_t pc_src_e,
+    input pc_src_t      pc_src_e,
 
     // Forwarding signals
-    output rd1_fwd_t rd1_fwd_sel_e, // select signal for the first read data (rd1)
-    output rd2_fwd_t rd2_fwd_sel_e, // select signal for the second read data (rd2)
+    output rd1_fwd_t    rd1_fwd_sel_e, // select signal for the first read data (rd1)
+    output rd2_fwd_t    rd2_fwd_sel_e, // select signal for the second read data (rd2)
 
     // Stalls signals
-    output logic stall_f, stall_d, stall_e, stall_m, stall_wb, flush_d, flush_e
+    output logic        stall_f, stall_d, stall_e, stall_m, stall_wb, flush_d, flush_e
 );
 
     // Control Hazard
-    logic control_hazard;
-    assign control_hazard = pc_src_e == PC_SRC_PC_TARGET;
+    logic   control_hazard;
+    assign  control_hazard = pc_src_e == PC_SRC_PC_TARGET;
 
     // Declaration
     logic lw_stall, readdatawait; // a load word stall induces a stall of f (and IW) and d registers, and introduces a bubble in e
-    assign stall_f = lw_stall | readdatawait;
-    assign stall_d = lw_stall | readdatawait;
-    assign stall_e = readdatawait;
-    assign stall_m = readdatawait; 
+    assign stall_f  = lw_stall | readdatawait;
+    assign stall_d  = lw_stall | readdatawait;
+    assign stall_e  = readdatawait;
+    assign stall_m  = readdatawait; 
     assign stall_wb = readdatawait; 
-    assign flush_d = control_hazard;
-    assign flush_e = lw_stall | control_hazard;
+    assign flush_d  = control_hazard;
+    assign flush_e  = lw_stall | control_hazard;
     // STALL M and WB will be asserted by the cycle latency FSM when switching to BRAM
 
 

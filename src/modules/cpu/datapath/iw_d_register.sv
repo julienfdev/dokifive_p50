@@ -1,8 +1,8 @@
 module iw_d_register(
-    input logic clk, rst, en, clr,
-    input logic [31:0] instr_iw, pc_iw, pc_plus_4_iw, // instruction fetched and PC + 4
+    input   logic           clk, rst, en, clr,
+    input   logic [31:0]    instr_iw, pc_iw, pc_plus_4_iw, // instruction fetched and PC + 4
 
-    output logic [31:0] instr_d, pc_d, pc_plus_4_d // instruction to be decoded and PC + 4
+    output  logic [31:0]    instr_d, pc_d, pc_plus_4_d // instruction to be decoded and PC + 4
 );
 
     en_clr_arst_register #(

@@ -2,8 +2,7 @@ import types::*;
 import io::*;
 
 module dokifive_soc #(
-    parameter INITIAL_RF = "",
-    parameter INITIAL_MOCK_INSTR = ""
+    parameter INITIAL_INSTR = ""
 ) (
     input logic clk, rst,
 
@@ -12,17 +11,17 @@ module dokifive_soc #(
 );
 
     // Wire definition
-    bool_t mem_write;
-    logic stall_f;
-    logic flush_d;
-    logic read_en;
-    logic [31:0] instr_addr, instr_data, mem_addr, mem_data_r, mem_data_w;
+    bool_t          mem_write;
+    logic           stall_f;
+    logic           flush_d;
+    logic           read_en;
+    logic [31:0]    instr_addr, instr_data, mem_addr, mem_data_r, mem_data_w;
     byte_half_sel_t byteenablea;
 
     // We need a registered flush_d signal (1 clock cycle behind !flush_d signal)
     // Because our memory has a registered address but not a registered output
     en_clr_arst_register #(
-        .WIDTH(1)
+    .WIDTH(1)
     ) en_clr_arst_register_instance (
         .d(~flush_d),
         .q(read_en),
@@ -32,9 +31,7 @@ module dokifive_soc #(
         .clr(1'b0)
     );
 
-    cpu #(
-    .INITIAL_RF(INITIAL_RF)
-    ) cpu_instance (
+    cpu cpu_instance (
         .clk(clk),
         .rst(rst),
         .instr_data(instr_data),
@@ -49,7 +46,7 @@ module dokifive_soc #(
     );
 
     memory_controller #(
-        .INITIAL_MOCK_INSTR(INITIAL_MOCK_INSTR)
+    .INITIAL_MOCK_INSTR(INITIAL_INSTR)
     ) memory_controller_instance (
         .clk(clk),
         .rst(rst),

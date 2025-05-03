@@ -3,14 +3,13 @@ import io::*;
 
 module tb_soc;
     // Clock and reset
-    logic clk = 0;
-    logic rst = 1;
-    GPREGS_T GPREGS;
+    logic       clk = 0;
+    logic       rst = 1;
+    GPREGS_T    GPREGS;
 
     // SoC instance
     dokifive_soc #(
-        .INITIAL_RF(""),
-        .INITIAL_MOCK_INSTR("instr_init.mem")
+    .INITIAL_INSTR("instr_init.mem")
     ) uut  (
         .clk(clk),
         .rst(rst),

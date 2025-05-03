@@ -1,8 +1,8 @@
 import types::*;
 
 module lw_fsm(
-    input logic clk, rst, lwstall, readdatavalid,
-    output logic readdatawait
+    input   logic clk, rst, lwstall, readdatavalid,
+    output  logic readdatawait
 );
 
 lw_fsm_state_t nextstate, state;

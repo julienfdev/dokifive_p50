@@ -4,9 +4,9 @@ import types::*;
 module instruction_memory #(
     INITIAL = ""
 ) (
-    input clk, rst, en,
-    input logic [13:0] addr,
-    output logic [31:0] rdata
+    input   logic           clk, rst, en,
+    input   logic [13:0]    addr,
+    output  logic [31:0]    rdata
 );
 
     (* ramstyle = "M9K" *) logic [31:0] data[0:16383]; // 16K words, 64KB of instruction memory

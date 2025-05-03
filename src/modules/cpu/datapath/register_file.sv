@@ -1,12 +1,9 @@
 // 3 ported 32x32 register file
-module register_file #(
-    parameter INITIAL = ""
-)(
-    input clk, we3,
-    input logic [4:0] ra1, ra2, wa3, // read and write addresses
-    input logic [31:0] wd3, // write data
-
-    output logic [31:0] rd1, rd2 // read data
+module register_file(
+    input                   clk, we3,
+    input   logic [4:0]     ra1, ra2, wa3, // read and write addresses
+    input   logic [31:0]    wd3, // write data
+    output  logic [31:0]    rd1, rd2 // read data
 );
 
     (* ramstyle = "logic" *) logic [31:0] rf [0:31]; // register file, we prevent synthesizing it as a block RAM to avoid latency issues
@@ -19,12 +16,4 @@ module register_file #(
             rf[wa3] <= wd3; // write data
         end
     end
-
-    initial begin
-        if (INITIAL != "") begin
-            $display("Initializing register file from %s", INITIAL);
-            $readmemh(INITIAL, rf);
-        end
-    end
-
 endmodule

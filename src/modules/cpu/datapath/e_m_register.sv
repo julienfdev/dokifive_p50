@@ -1,10 +1,10 @@
 module e_m_register(
-    input logic clk, rst, en, clr,
-    input logic [31:0] alu_result_e, w_data_e, pc_plus_4_e, imm_ext_e,
-    input logic [4:0] wa3_e, // write address for the register file
+    input   logic           clk, rst, en, clr,
+    input   logic [31:0]    alu_result_e, w_data_e, pc_plus_4_e, imm_ext_e,
+    input   logic [4:0]     wa3_e, // write address for the register file
 
-    output logic [31:0] alu_result_m, w_data_m, pc_plus_4_m, imm_ext_m,
-    output logic [4:0] wa3_m // write address for the register file
+    output  logic [31:0]    alu_result_m, w_data_m, pc_plus_4_m, imm_ext_m,
+    output  logic [4:0]     wa3_m // write address for the register file
 );
 
     // EXECUTE_MEMORY REGISTER

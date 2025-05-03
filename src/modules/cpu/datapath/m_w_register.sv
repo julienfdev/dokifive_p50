@@ -1,12 +1,12 @@
 module m_w_register(
-    input logic clk, rst, en, clr,
+    input   logic           clk, rst, en, clr,
     // input nets
-    input logic [31:0] alu_result_m, r_data_m, pc_plus_4_m, imm_ext_m,
-    input logic [4:0] wa3_m, // write address for the register file
+    input   logic [31:0]    alu_result_m, r_data_m, pc_plus_4_m, imm_ext_m,
+    input   logic [4:0]     wa3_m, // write address for the register file
 
     // output nets
-    output logic [31:0] alu_result_w, r_data_w, pc_plus_4_w, imm_ext_w, // Multiplexer inputs for the writeback stage
-    output logic [4:0] wa3_w // write address for the register file
+    output  logic [31:0]    alu_result_w, r_data_w, pc_plus_4_w, imm_ext_w, // Multiplexer inputs for the writeback stage
+    output  logic [4:0]     wa3_w // write address for the register file
 );
 
     // MEMORY_WRITEBACK REGISTER

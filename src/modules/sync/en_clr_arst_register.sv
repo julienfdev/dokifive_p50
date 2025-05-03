@@ -2,9 +2,9 @@ module en_clr_arst_register #(
     parameter WIDTH = 32, // Default width of the register
     parameter OFFSET = 0 // Default offset for the register
 ) (
-    input  logic [WIDTH-1:0] d, // Data input
-    output logic [WIDTH-1:0] q, // Data output
-    input  logic clk, rst, en, clr // Clock, reset, and enable signals
+    input  logic [WIDTH-1:0]    d, // Data input
+    output logic [WIDTH-1:0]    q, // Data output
+    input  logic                clk, rst, en, clr // Clock, reset, and enable signals
 );
 
     // Asynchronous reset and synchronous enable

@@ -57,10 +57,10 @@ module dokifive_p50_top(
 	//=======================================================
 	//  REG/WIRE declarations
 	//=======================================================
-	logic clk_div;
+	logic 			clk_div;
+	GPREGS_T 		GPREGS;
+	logic [6:0] 	seg0, seg1, seg2, seg3, seg4, seg5;
 
-	GPREGS_T GPREGS;
-	logic [6:0] seg0, seg1, seg2, seg3, seg4, seg5;
 	assign HEX0 = {1'b1, seg0};
 	assign HEX1 = {1'b1, seg1};
 	assign HEX2 = {1'b1, seg2};
@@ -73,7 +73,7 @@ module dokifive_p50_top(
 	//  Structural coding
 	//=======================================================
 	dokifive_soc #(
-	.INITIAL_MOCK_INSTR("instr_init.mem")
+	.INITIAL_INSTR("instr_init.mem")
 	) dokifive_soc_instance (
 		.clk(clk_div),
 		.rst(~KEY[0]),
@@ -107,7 +107,7 @@ module dokifive_p50_top(
 	);
 
 	clock_divider #(
-		.WIDTH(18)
+	.WIDTH(18)
 	) clock_divider_instance (
 		.clk(ADC_CLK_10),
 		.rst(~KEY[0]),

@@ -76,6 +76,15 @@ Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
 Top level modules:
 	data_bram
 
+} {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/memory/instruction_memory.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/memory/instruction_memory.sv
+Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
+-- Compiling package instruction_memory_sv_unit
+-- Importing package types
+-- Compiling module instruction_memory
+
+Top level modules:
+	instruction_memory
+
 } {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/cpu/control_unit/control_d_e_register.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/cpu/control_unit/control_d_e_register.sv
 Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
 -- Compiling package control_d_e_register_sv_unit
@@ -144,6 +153,13 @@ Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
 
 Top level modules:
 	mux2
+
+} {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/packages/io.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/packages/io.sv
+Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
+-- Compiling package io
+
+Top level modules:
+	--none--
 
 } {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/cpu/control_unit/control_unit.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/cpu/control_unit/control_unit.sv
 Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
@@ -236,5 +252,24 @@ Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
 
 Top level modules:
 	control_e_m_register
+
+} {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/cpu/datapath/datapath.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/cpu/datapath/datapath.sv
+Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
+-- Compiling package datapath_sv_unit
+-- Importing package types
+-- Compiling module datapath
+
+Top level modules:
+	datapath
+
+} {} {}} C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/memory/memory_controller.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/julien/Documents/fpga/dokifive_p50/src/modules/memory/memory_controller.sv
+Questa Intel Starter FPGA Edition-64 vlog 2024.3 Compiler 2024.09 Sep 10 2024
+-- Compiling package memory_controller_sv_unit
+-- Importing package types
+-- Importing package io
+-- Compiling module memory_controller
+
+Top level modules:
+	memory_controller
 
 } {} {}}

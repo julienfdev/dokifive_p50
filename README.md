@@ -53,3 +53,11 @@ You can write your own C or assembly programs, build them with the provided tool
 
 ## License
 See `LICENSE.md` for licensing information.
+
+## ❤️ Acknowledgments
+
+- The RISC-V community for creating such an open and elegant ISA
+- *Digital Design and Computer Architecture: RISC-V Edition* by David Money Harris & Sarah L. Harris
+- **Shawn Hymel**, for his clear and accessible courses on Digital Design.
+- **V. Hunter Adams**, for his incredibles courses and inspiration
+

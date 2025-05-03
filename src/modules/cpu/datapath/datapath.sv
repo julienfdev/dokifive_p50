@@ -97,7 +97,8 @@ module datapath #(
         .out(pc_fnext)
     );
     en_clr_arst_register #(
-    .WIDTH(32)
+    .WIDTH(32),
+    .OFFSET('h0000) // Should be 0x8000 when we introduce the bootloader
     ) pc_register (
         .d(pc_fnext),
         .q(pc_f),

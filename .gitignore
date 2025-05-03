@@ -2,7 +2,6 @@ simulation/work
 *.o
 *.elf
 simulation/wlf*
-src/*.mem
 src/db
 *.rpt
 *.summary

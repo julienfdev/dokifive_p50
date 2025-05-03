@@ -2,7 +2,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-  /* Instructions and constants start at 0x0000 */
+  /* Instructions and constants start at 0x8000 */
   .text 0x00000000 :
   {
     *(.text._start)  /* Place _start at beginning */
@@ -10,8 +10,8 @@ SECTIONS
     *(.rodata*)      /* Read-only data like const strings */
   }
 
-  /* Global data starts at 0x0200 */
-  .data 0x00000200 :
+  /* Global data starts at 0x10000000 */
+  .data 0x10000000 :
   {
     *(.data*)
   }
@@ -24,4 +24,6 @@ SECTIONS
     *(COMMON)
     __bss_end = .;
   }
+  . = 0x10000000 + 0x20000; /* Reserve 128KB for .data + .bss + stack */
+  _stack_top = .;
 }

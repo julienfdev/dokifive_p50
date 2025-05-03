@@ -21,18 +21,21 @@ module  memory_controller #(
 
     output GPREGS_T GPREGS
 );
-
-localparam INSTRUCTION_ROM_START = 'h0;
-localparam DATA_RAM_START = 'h200;
+// for now, we reset the PC at 8000 because we don't have a bootloader yet,
+//but instruction rom itself starts at 'h0 
+localparam INSTRUCTION_ROM_START = 'h0; 
+localparam INSTRUCTION_ROM_END = 'h80000;  // 64KB of ROM
+localparam DATA_RAM_START = 'h10000000;
+localparam DATA_RAM_END = 'h10020000; // 16KB of RAM
 
 // Instruction
 logic [31:0] instr_data_raw;
 logic instruction_valid;
 
 always_comb begin
-    instruction_valid = instr_addr >= INSTRUCTION_ROM_START && instr_addr < DATA_RAM_START;
+    instruction_valid = instr_addr >= INSTRUCTION_ROM_START && instr_addr < INSTRUCTION_ROM_END;
     if(!instruction_valid) begin
-        instr_data = 'hDEADBEEF; // we're
+        instr_data = 'hDEADBEEF; 
     end else if(!read_en) begin
         instr_data = 'h0; // zero out the instruction, like we've done on the decode stage
     end else begin
@@ -44,7 +47,7 @@ end
 // RAM
 logic [31:0] mem_data_raw;
 logic data_valid;
-assign data_valid = mem_addr >= DATA_RAM_START && mem_addr < GPRMMSTART;
+assign data_valid = mem_addr >= DATA_RAM_START && mem_addr < DATA_RAM_END;
 bool_t write_valid;
 assign write_valid = (data_valid && mem_write == TRUE) ? TRUE : FALSE;
 // GPRMM
@@ -55,7 +58,7 @@ logic [31:0] gprmm_read_raw;
 always_comb begin
     mem_read_data = 32'hDEADBEEF;
 
-    if(mem_addr >= DATA_RAM_START && mem_addr < GPRMMSTART ) begin
+    if(mem_addr >= DATA_RAM_START && mem_addr < DATA_RAM_END ) begin
         mem_read_data = mem_data_raw;
     end else if (mem_addr >= GPRMMSTART && mem_addr < GPRMMEND) begin
         mem_read_data = gprmm_read_raw;

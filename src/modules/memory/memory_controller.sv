@@ -1,8 +1,7 @@
 import types::*;
 import io::*;
 module  memory_controller #(
-    parameter INITIAL_MOCK_INSTR = "",
-    parameter INITIAL_MOCK_DATA = ""
+    parameter INITIAL_MOCK_INSTR = ""
 ) (
     input logic clk, rst,
 

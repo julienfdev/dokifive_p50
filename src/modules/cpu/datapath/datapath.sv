@@ -78,6 +78,8 @@ module datapath #(
     logic [31:0] forwarded_value_m; // alu_result_m if result_src is not IMM
     logic [31:0] alu_result_m, pc_plus_4_m, imm_ext_m; // ALU result and write data from rd2_e (or forwared values)
     logic [4:0] wa3_m; // write address for the register file
+    logic [31:0] mem_data_w_m_raw;
+    logic [31:0] mem_data_r_m_ext; // data to be written to memory, after shifting logic
 
     // WRITEBACK
     logic [4:0] wa3_w; // write address for the register file
@@ -279,7 +281,7 @@ module datapath #(
         .imm_ext_e(imm_ext_e),
         .wa3_e(wa3_e),
         .alu_result_m(alu_result_m),
-        .w_data_m(mem_data_w_m),
+        .w_data_m(mem_data_w_m_raw), // Before shifting logic
         .pc_plus_4_m(pc_plus_4_m),
         .imm_ext_m(imm_ext_m),
         .wa3_m(wa3_m)
@@ -292,6 +294,20 @@ module datapath #(
     assign mem_addr_m = alu_result_m; // write address for the data memory
     assign forwarded_value_m = (result_src_m == RESULT_SRC_IMM) ? imm_ext_m : alu_result_m; // ALU result if result_src is not IMM
 
+    // Byte store unit
+    byte_store_unit byte_store_unit_instance (
+        .data_in(mem_data_w_m_raw),
+        .byte_half_sel_m(byte_half_sel_m),
+        .data_out(mem_data_w_m)
+    );
+
+    byte_load_unit byte_load_unit_instance (
+        .data_in(mem_data_r_m),
+        .byte_half_sel_m(byte_half_sel_m),
+        .word_ext_m(word_ext_m),
+        .data_out(mem_data_r_m_ext)
+    );
+
     // MEMORY_WRITEBACK REGISTER
     m_w_register m_w_register_instance (
         .clk(clk),
@@ -299,7 +315,7 @@ module datapath #(
         .en(~stall_wb), // enable the register only if not stalled
         .clr(1'b0), // no clear signal for the memory writeback register
         .alu_result_m(alu_result_m),
-        .r_data_m(mem_data_r_m),
+        .r_data_m(mem_data_r_m_ext),
         .pc_plus_4_m(pc_plus_4_m),
         .imm_ext_m(imm_ext_m),
         .wa3_m(wa3_m),

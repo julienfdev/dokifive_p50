@@ -30,6 +30,29 @@ _start:
     lw t2, 0(t3)           # Load from global_a into t2
     mv s8, t2              # Save loaded value for observation
 
+    # Test SB/LB/LBU
+    li t4, 0xFFFFFF80      # t4 = -128 (0x80 as signed byte)
+    la t5, global_b        # t5 = address of global_b
+    sb t4, 1(t5)           # Store byte to global_b
+    lb t6, 1(t5)           # Load signed byte
+    mv s9, t6              # s9 = should be 0xFFFFFF80 (-128)
+    lbu t6, 1(t5)          # Load unsigned byte
+    mv s10, t6             # s10 = should be 0x00000080 (128)
+
+    # Test SH/LH/LHU
+    li t4, 0xFFFF8001      # t4 = -32767 (0x8001 as signed half)
+    sh t4, 0(t5)           # Store halfword to global_b
+    lh t6, 0(t5)           # Load signed halfword
+    mv s11, t6             # s11 = should be 0xFFFF8001 (-32767)
+    lhu t6, 0(t5)          # Load unsigned halfword
+    mv t4, t6              # t4 = should be 0x00008001 (32769)
+
+    # Test that sw/lw still work (already tested above, but repeat for completeness)
+    li t2, 0xCAFEBABE
+    sw t2, 0(t5)
+    lw t2, 0(t5)
+    mv t3, t2              # t3 = should be 0xCAFEBABE
+
     # BEQ: should NOT branch (1 != 2)
     li s1, 0         # s1 = 0 (default)
     beq t0, t1, beq_taken

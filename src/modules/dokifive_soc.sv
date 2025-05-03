@@ -3,8 +3,7 @@ import io::*;
 
 module dokifive_soc #(
     parameter INITIAL_RF = "",
-    parameter INITIAL_MOCK_INSTR = "",
-    parameter INITIAL_MOCK_DATA = ""
+    parameter INITIAL_MOCK_INSTR = ""
 ) (
     input logic clk, rst,
 
@@ -18,6 +17,7 @@ module dokifive_soc #(
     logic flush_d;
     logic read_en;
     logic [31:0] instr_addr, instr_data, mem_addr, mem_data_r, mem_data_w;
+    byte_half_sel_t byteenablea;
 
     // We need a registered flush_d signal (1 clock cycle behind !flush_d signal)
     // Because our memory has a registered address but not a registered output
@@ -44,12 +44,12 @@ module dokifive_soc #(
         .mem_data_w(mem_data_w),
         .mem_write(mem_write),
         .stall_f(stall_f),
-        .flush_d(flush_d)
+        .flush_d(flush_d),
+        .byte_half_sel_m(byteenablea)
     );
 
     memory_controller #(
-        .INITIAL_MOCK_INSTR(INITIAL_MOCK_INSTR),
-        .INITIAL_MOCK_DATA(INITIAL_MOCK_DATA)
+        .INITIAL_MOCK_INSTR(INITIAL_MOCK_INSTR)
     ) memory_controller_instance (
         .clk(clk),
         .rst(rst),
@@ -61,6 +61,7 @@ module dokifive_soc #(
         .mem_addr(mem_addr),
         .mem_write_data(mem_data_w),
         .mem_read_data(mem_data_r),
+        .byteenablea(byteenablea),
         .GPREGS(GPREGS)
     );
 

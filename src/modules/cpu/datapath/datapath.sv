@@ -48,6 +48,7 @@ module datapath #(
     // memory
     input byte_half_sel_t byte_half_sel_m, // Byte/half select signal, used for byte/half instructions
     input word_ext_t word_ext_m, // Word extension signal, used for byte/half instructions
+    input result_src_t result_src_m,
     // writeback
     input bool_t reg_write_w,
     input result_src_t result_src_w
@@ -74,6 +75,7 @@ module datapath #(
     logic zero_e;
 
     // MEMORY
+    logic [31:0] forwarded_value_m; // alu_result_m if result_src is not IMM
     logic [31:0] alu_result_m, pc_plus_4_m, imm_ext_m; // ALU result and write data from rd2_e (or forwared values)
     logic [4:0] wa3_m; // write address for the register file
 
@@ -211,7 +213,7 @@ module datapath #(
         .s(rd1_fwd_sel_e),
         .a(rd1_e),
         .b(result_w),
-        .c(alu_result_m),
+        .c(forwarded_value_m),
         .d(32'hDEADBEEF),
         .out(rd1_fwd_e)
     );
@@ -221,7 +223,7 @@ module datapath #(
         .s(rd2_fwd_sel_e),
         .a(rd2_e),
         .b(result_w),
-        .c(alu_result_m),
+        .c(forwarded_value_m),
         .d(32'hDEADBEEF),
         .out(rd2_fwd_e)
     );
@@ -288,6 +290,7 @@ module datapath #(
     assign rd_addr_m = wa3_m;
     // Memory stage is simpler, as the bulk of the work is done outside of the datapath, eveything is already declared
     assign mem_addr_m = alu_result_m; // write address for the data memory
+    assign forwarded_value_m = (result_src_m == RESULT_SRC_IMM) ? imm_ext_m : alu_result_m; // ALU result if result_src is not IMM
 
     // MEMORY_WRITEBACK REGISTER
     m_w_register m_w_register_instance (

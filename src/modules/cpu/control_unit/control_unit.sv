@@ -14,6 +14,7 @@ module control_unit(
     output pc_target_src_t pc_target_src_e,
     output bool_t reg_write_m, // for hazard handling
     output bool_t reg_write_w, // Register write signal, used to control the register file
+    output result_src_t result_src_m,
     output result_src_t result_src_w, // Result source, used to select the source of the data to be written back to the register file
     output bool_t mem_write_m, // Memory write signal, now bool_t
     output branch_valid_src_t branch_valid_src_e,
@@ -60,7 +61,6 @@ logic byte_half_enable_e; // Byte/half enable signal, used for byte/half instruc
 logic [2:0] funct3_e; // funct3 field from the instruction, used for byte/half instructions
 
 // Memory
-result_src_t result_src_m;
 logic byte_half_enable_m; // Byte/half enable signal, used for byte/half instructions
 logic [2:0] funct3_m; // funct3 field from the instruction, used for byte/half instructions
 

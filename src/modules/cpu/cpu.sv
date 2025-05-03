@@ -32,6 +32,7 @@ module cpu #(
     alu_op_t alu_op; // ALU operation, used to select the operation to be performed by the ALU
     // memory
     word_ext_t word_ext_m; // Word extension signal, used for byte/half instructions
+    result_src_t result_src_m;
     // writeback
     bool_t reg_write_w; // register write signal, used to control the register file
     result_src_t result_src_w; // result source, used to select the source of the data to be written back to the register file
@@ -90,6 +91,7 @@ module cpu #(
         .branch_valid_src_e(branch_valid_src_e),
         .byte_half_sel_m(byte_half_sel_m), // byte/half extension signal for memory
         .word_ext_m(word_ext_m), // word extension signal for memory
+        .result_src_m(result_src_m),
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w)
     );
@@ -114,6 +116,7 @@ module cpu #(
         .pc_target_src_e(pc_target_src_sig_e),
         .reg_write_m(reg_write_m),
         .reg_write_w(reg_write_w),
+        .result_src_m(result_src_m),
         .result_src_w(result_src_w),
         .mem_write_m(mem_write),
         .branch_valid_src_e(branch_valid_src_e),

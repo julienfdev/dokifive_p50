@@ -1,17 +1,34 @@
 .globl _start
 .equ _start, 0x00000000
 
-
 .data
     .globl test_var
 
 test_var:
     .word 0x12345678
 
-    .text
+.bss
+    .globl global_a
+    .globl global_b
+    .align 2
+global_a:
+    .space 4
+    .align 2
+global_b:
+    .space 4
+
+.text
 _start:
     li t0, 1         # t0 = 1
     li t1, 2         # t1 = 2
+
+    # Test SW/LW with uninitialized global variable
+    li t2, 0xCAFEBABE      # t2 = test value
+    la t3, global_a        # t3 = address of global_a
+    sw t2, 0(t3)           # Store t2 to global_a
+    li t2, 0               # Clear t2
+    lw t2, 0(t3)           # Load from global_a into t2
+    mv s8, t2              # Save loaded value for observation
 
     # BEQ: should NOT branch (1 != 2)
     li s1, 0         # s1 = 0 (default)

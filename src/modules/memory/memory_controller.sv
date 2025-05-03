@@ -18,6 +18,7 @@ module  memory_controller #(
     input bool_t mem_write,
     input logic [31:0] mem_addr, mem_write_data,
     output logic [31:0] mem_read_data,
+    input byte_half_sel_t byteenablea,
 
     output GPREGS_T GPREGS
 );
@@ -74,21 +75,10 @@ instruction_memory #(
     .rdata(instr_data_raw)
 );
 
-// data_memory #(
-//     .INITIAL(INITIAL_MOCK_DATA)
-// ) data_memory_instance (
-//     .clk(clk),
-//     .rst(rst),
-//     .we(write_valid),
-//     .addr(mem_addr >> 2),
-//     .wdata(mem_write_data),
-//     .rdata(mem_data_raw)
-// );
-
 // 16kbits of BRAM
 data_bram	data_bram_inst (
 	.address(mem_addr >> 2),
-	.byteena(4'b1), // No masking
+	.byteena(byteenablea), // Masking from the control unit
 	.clock (clk),
 	.data (mem_write_data),
 	.wren (write_valid),

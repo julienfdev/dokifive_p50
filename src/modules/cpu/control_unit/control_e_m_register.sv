@@ -12,11 +12,15 @@ module control_e_m_register(
     input bool_t reg_write_e,
     input bool_t mem_write_e,
     input result_src_t result_src_e,
+    input logic byte_half_enable_e, // Byte/half enable signal, used for byte/half instructions
+    input logic [2:0] funct3_e, // funct3 field from the instruction, used for byte/half instructions
 
     // Memory outputs
     output bool_t reg_write_m,
     output bool_t mem_write_m,
-    output result_src_t result_src_m
+    output result_src_t result_src_m,
+    output logic byte_half_enable_m, // Byte/half enable signal, used for byte/half instructions
+    output logic [2:0] funct3_m // funct3 field from the instruction, used for byte/half instructions
 );
 
     // Intermediate logic vectors
@@ -66,6 +70,28 @@ module control_e_m_register(
     ) en_clr_arst_register_instance (
         .d(instr_e),
         .q(instr_m),
+        .clk(clk),
+        .rst(rst),
+        .en(en),
+        .clr(clr)
+    );
+
+    en_clr_arst_register #(
+    .WIDTH(1)
+    ) byte_half_enable_e_m (
+        .d(byte_half_enable_e),
+        .q(byte_half_enable_m),
+        .clk(clk),
+        .rst(rst),
+        .en(en),
+        .clr(clr)
+    );
+
+    en_clr_arst_register #(
+    .WIDTH(3)
+    ) funct3_e_m (
+        .d(funct3_e),
+        .q(funct3_m),
         .clk(clk),
         .rst(rst),
         .en(en),

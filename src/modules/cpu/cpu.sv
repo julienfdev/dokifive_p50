@@ -7,10 +7,11 @@ module cpu #(
 
     // Memory controller
     input logic [31:0] instr_data, mem_data_r, // From the memory controller
-    output logic [31:0] instr_addr, mem_addr, mem_data_w, // To the memory controller
+    output logic [31:0] instr_addr, mem_addr_m, mem_data_w, // To the memory controller
     output bool_t mem_write, // Memory write signal, will be used by the control unit to control the memory controller
     output logic stall_f, // we need the info for the memory
-    output logic flush_d
+    output logic flush_d,
+    output byte_half_sel_t byte_half_sel_m // To memory byteenablea
 );
 
     // WIRE DECLARATIONS
@@ -29,6 +30,8 @@ module cpu #(
     alu_src_a_sig_t alu_src_a_sig_e; // ALU source A, used to switch between rs1 and the PC (AUIPC)
     alu_src_b_sig_t alu_src_b_sig_e; // ALU source, used to switch between the second operand and the immediate value
     alu_op_t alu_op; // ALU operation, used to select the operation to be performed by the ALU
+    // memory
+    word_ext_t word_ext_m; // Word extension signal, used for byte/half instructions
     // writeback
     bool_t reg_write_w; // register write signal, used to control the register file
     result_src_t result_src_w; // result source, used to select the source of the data to be written back to the register file
@@ -60,7 +63,7 @@ module cpu #(
         .pc_f(pc_f),
         .instr_d(instr_d),
         .branch_valid_e(branch_valid_e),
-        .mem_addr_m(mem_addr),
+        .mem_addr_m(mem_addr_m),
         .mem_data_w_m(mem_data_w),
         .stall_f(stall_f),
         .stall_d(stall_d),
@@ -85,6 +88,8 @@ module cpu #(
         .alu_op(alu_op),
         .pc_target_src_sig_e(pc_target_src_sig_e),
         .branch_valid_src_e(branch_valid_src_e),
+        .byte_half_sel_m(byte_half_sel_m), // byte/half extension signal for memory
+        .word_ext_m(word_ext_m), // word extension signal for memory
         .reg_write_w(reg_write_w),
         .result_src_w(result_src_w)
     );
@@ -100,6 +105,7 @@ module cpu #(
         .stall_wb(stall_wb),
         .instr_d(instr_d),
         .branch_valid_e(branch_valid_e),
+        .mem_addr_m(mem_addr_m),
         .immsrc_d(immsrc_d),
         .pc_src_e(pc_src_e),
         .alu_src_a_sig_e(alu_src_a_sig_e),
@@ -111,6 +117,8 @@ module cpu #(
         .result_src_w(result_src_w),
         .mem_write_m(mem_write),
         .branch_valid_src_e(branch_valid_src_e),
+        .byte_half_sel_m(byte_half_sel_m), // byte/half extension signal for memory
+        .word_ext_m(word_ext_m), // word extension signal for memory
         .result_src_e(result_src_e)
     );
 

@@ -4,6 +4,7 @@ module control_unit(
     input logic clk, rst, flush_e, stall_e, stall_m, stall_wb,  // Control signals
     input logic [31:0] instr_d, // Instruction to be decoded
     input logic branch_valid_e, // Zero flag from the ALU, used for branch/jump instructions
+    input logic [31:0] mem_addr_m, // Memory address for the memory stage, used to decode byte/half instructions
 
     output immsrc_t immsrc_d, // Immediate source for the decode stage
     output pc_src_t pc_src_e, // PC source for branch/jump, used to switch between PC + 4 and the target address
@@ -16,6 +17,8 @@ module control_unit(
     output result_src_t result_src_w, // Result source, used to select the source of the data to be written back to the register file
     output bool_t mem_write_m, // Memory write signal, now bool_t
     output branch_valid_src_t branch_valid_src_e,
+    output byte_half_sel_t byte_half_sel_m, // Byte/half select signal, used for byte/half instructions
+    output word_ext_t word_ext_m, // Word extension signal, used for byte/half instructions
 
     // Hazard handling
     output result_src_t result_src_e
@@ -43,6 +46,7 @@ alu_src_a_sig_t alu_src_a_sig_d;
 alu_src_b_sig_t alu_src_b_sig_d;
 pc_target_src_t pc_target_src_d;
 branch_valid_src_t branch_valid_src_d;
+logic byte_half_enable_d; // Byte/half enable signal, used for byte/half instructions
 
 // Debug signals
 logic [31:0] instr_e, instr_m, instr_w; // Debug output, instruction to be executed
@@ -52,9 +56,14 @@ bool_t reg_write_e;
 bool_t mem_write_e;
 bool_t jump_e;
 bool_t branch_e;
+logic byte_half_enable_e; // Byte/half enable signal, used for byte/half instructions
+logic [2:0] funct3_e; // funct3 field from the instruction, used for byte/half instructions
 
 // Memory
 result_src_t result_src_m;
+logic byte_half_enable_m; // Byte/half enable signal, used for byte/half instructions
+logic [2:0] funct3_m; // funct3 field from the instruction, used for byte/half instructions
+
 
 
 // Memory
@@ -74,7 +83,8 @@ main_decoder main_decoder_instance (
     .alu_src_b_sig(alu_src_b_sig_d),
     .immsrc(immsrc_d),
     .pc_target_src(pc_target_src_d),
-    .branch_valid_src(branch_valid_src_d)
+    .branch_valid_src(branch_valid_src_d),
+    .byte_half_enable_d(byte_half_enable_d)
 );
 
 // Alu decoder
@@ -103,6 +113,8 @@ control_d_e_register control_d_e_register_instance (
     .alu_src_b_sig_d(alu_src_b_sig_d),
     .pc_target_src_d(pc_target_src_d),
     .branch_valid_src_d(branch_valid_src_d),
+    .byte_half_enable_d(byte_half_enable_d),
+    .funct3_d(funct3_d), // funct3 field from the instruction, used for byte/half instructions
     .reg_write_e(reg_write_e),
     .mem_write_e(mem_write_e),
     .jump_e(jump_e),
@@ -112,7 +124,9 @@ control_d_e_register control_d_e_register_instance (
     .alu_src_a_sig_e(alu_src_a_sig_e),
     .alu_src_b_sig_e(alu_src_b_sig_e),
     .pc_target_src_e(pc_target_src_e),
-    .branch_valid_src_e(branch_valid_src_e)
+    .branch_valid_src_e(branch_valid_src_e),
+    .byte_half_enable_e(byte_half_enable_e),
+    .funct3_e(funct3_e) // funct3 field from the instruction, used for byte/half instructions
 );
 
 // EXECUTE STAGE
@@ -130,9 +144,22 @@ control_e_m_register control_e_m_register_instance (
     .reg_write_e(reg_write_e),
     .mem_write_e(mem_write_e),
     .result_src_e(result_src_e),
+    .byte_half_enable_e(byte_half_enable_e),
+    .funct3_e(funct3_e), // funct3 field from the instruction, used for byte/half instructions
     .reg_write_m(reg_write_m),
     .mem_write_m(mem_write_m),
-    .result_src_m(result_src_m)
+    .result_src_m(result_src_m),
+    .byte_half_enable_m(byte_half_enable_m),
+    .funct3_m(funct3_m) // funct3 field from the instruction, used for byte/half instructions
+);
+
+// MEMORY STAGE, we introduce the BYTE_HALF_DECODER
+byte_half_decoder byte_half_decoder_instance (
+    .byte_half_en_m(byte_half_enable_m),
+    .funct3_m(funct3_m),
+    .mem_addr_m(mem_addr_m[1:0]),
+    .byte_half_sel(byte_half_sel_m),
+    .word_ext(word_ext_m)
 );
 
 

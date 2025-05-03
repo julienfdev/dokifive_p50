@@ -40,7 +40,7 @@ module dokifive_soc #(
         .instr_data(instr_data),
         .mem_data_r(mem_data_r),
         .instr_addr(instr_addr),
-        .mem_addr(mem_addr),
+        .mem_addr_m(mem_addr),
         .mem_data_w(mem_data_w),
         .mem_write(mem_write),
         .stall_f(stall_f),

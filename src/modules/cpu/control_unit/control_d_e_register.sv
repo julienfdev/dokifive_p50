@@ -17,6 +17,8 @@ module control_d_e_register(
     input alu_src_b_sig_t alu_src_b_sig_d,
     input pc_target_src_t pc_target_src_d,
     input branch_valid_src_t branch_valid_src_d,
+    input logic byte_half_enable_d, // Byte/half enable signal, used for byte/half instructions
+    input logic [2:0] funct3_d, // funct3 field from the instruction, used for byte/half instructions
 
     // Execute outputs
     output bool_t reg_write_e,
@@ -26,7 +28,9 @@ module control_d_e_register(
     output alu_src_a_sig_t alu_src_a_sig_e,
     output alu_src_b_sig_t alu_src_b_sig_e,
     output pc_target_src_t pc_target_src_e,    
-    output branch_valid_src_t branch_valid_src_e
+    output branch_valid_src_t branch_valid_src_e,
+    output logic byte_half_enable_e, // Byte/half enable signal, used for byte/half instructions
+    output logic [2:0] funct3_e // funct3 field from the instruction, used for byte/half instructions
 
 );
 
@@ -170,6 +174,28 @@ en_clr_arst_register #(
 ) instr_e_en_clr_arst_register_instance (
     .d(instr_d),
     .q(instr_e),
+    .clk(clk),
+    .rst(rst),
+    .en(en),
+    .clr(clr)
+);
+
+en_clr_arst_register #(
+    .WIDTH(1)
+) byte_half_enable_en_clr_arst_register_instance (
+    .d(byte_half_enable_d),
+    .q(byte_half_enable_e),
+    .clk(clk),
+    .rst(rst),
+    .en(en),
+    .clr(clr)
+);
+
+en_clr_arst_register #(
+    .WIDTH(3)
+) funct3_en_clr_arst_register_instance (
+    .d(funct3_d),
+    .q(funct3_e),
     .clk(clk),
     .rst(rst),
     .en(en),

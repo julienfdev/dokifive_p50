@@ -45,6 +45,9 @@ module datapath #(
     input alu_op_t alu_op, // ALU operation, used to select the operation to be performed by the ALU
     input pc_target_src_t pc_target_src_sig_e,
     input branch_valid_src_t branch_valid_src_e,
+    // memory
+    input byte_half_sel_t byte_half_sel_m, // Byte/half select signal, used for byte/half instructions
+    input word_ext_t word_ext_m, // Word extension signal, used for byte/half instructions
     // writeback
     input bool_t reg_write_w,
     input result_src_t result_src_w

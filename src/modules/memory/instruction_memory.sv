@@ -5,12 +5,12 @@ module instruction_memory #(
     INITIAL = ""
 ) (
     input clk, rst, en,
-    input logic [4:0] addr,
+    input logic [6:0] addr,
     output logic [31:0] rdata
 );
 
-    (* ramstyle = "M9K" *) logic [31:0] data[0:31]; // 1k registers
-    logic [4:0] reg_addr;
+    (* ramstyle = "M9K" *) logic [31:0] data[0:127]; // 4kbits
+    logic [6:0] reg_addr;
 
     always_ff @(posedge clk) begin
         if(!rst && en) begin

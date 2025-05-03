@@ -1,5 +1,12 @@
-    .globl _start
-    .equ _start, 0x00000000
+.globl _start
+.equ _start, 0x00000000
+
+
+.data
+    .globl test_var
+
+test_var:
+    .word 0x12345678
 
     .text
 _start:
@@ -55,10 +62,15 @@ bgeu_test:
     li s6, 0
     bgeu t0, t1, bgeu_taken
     li s6, 60        # Not taken
-    j end
+    j auipc_test
 bgeu_taken:
     li s6, 61        # Taken
 
+auipc_test:
+    auipc t3, 0x12300   
+    addi  t3, t3, 0x100  # t3 = t3 + 0x100 (lower 12 bits)
+    mv    s7, t3         # Save result for observation
+
 end:
     j end
-    
+

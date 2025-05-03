@@ -84,4 +84,14 @@ package types;
         BRANCH_VALID_ZEROB = 2'b01,
         BRANCH_VALID_ALU0 = 2'b10
     } branch_valid_src_t;
+    // Signal types for partial word loads and stores
+    typedef enum logic [3:0] {
+        MASK_NONE = 4'b1111, // No mask
+        MASK_BYTE_0 = 4'b0001, // Mask for byte 0
+        MASK_BYTE_1 = 4'b0010, // Mask for byte 1
+        MASK_BYTE_2 = 4'b0100, // Mask for byte 2
+        MASK_BYTE_3 = 4'b1000, // Mask for byte 3
+        MASK_HALF_0 = 4'b0011, // Mask for halfword 0
+        MASK_HALF_1 = 4'b1100 // Mask for halfword 1
+    } store_mask_t;
 endpackage

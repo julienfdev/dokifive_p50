@@ -16,4 +16,4 @@ src/db
 *.qws
 src/incremental_db
 src/greybox_tmp
-riscv/toolchain/*.mem
+riscv/*.mem

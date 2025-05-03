@@ -24,9 +24,9 @@ module  memory_controller #(
 // for now, we reset the PC at 8000 because we don't have a bootloader yet,
 //but instruction rom itself starts at 'h0 
 localparam INSTRUCTION_ROM_START = 'h0; 
-localparam INSTRUCTION_ROM_END = 'h80000;  // 64KB of ROM
+localparam INSTRUCTION_ROM_END = 'h10000;  // 64KB of ROM
 localparam DATA_RAM_START = 'h10000000;
-localparam DATA_RAM_END = 'h10020000; // 16KB of RAM
+localparam DATA_RAM_END = 'h10008000; // 32KB of RAM
 
 // Instruction
 logic [31:0] instr_data_raw;
@@ -77,7 +77,7 @@ instruction_memory #(
     .rdata(instr_data_raw)
 );
 
-// 16kbits of BRAM
+// 32KB of BRAM
 data_bram	data_bram_inst (
 	.address(mem_addr >> 2),
 	.byteena(byteenablea), // Masking from the control unit

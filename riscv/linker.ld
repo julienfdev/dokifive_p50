@@ -2,7 +2,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-  /* Instructions and constants start at 0x8000 */
+  /* Instructions and constants start at 0x0 */
   .text 0x00000000 :
   {
     *(.text._start)  /* Place _start at beginning */
@@ -24,6 +24,6 @@ SECTIONS
     *(COMMON)
     __bss_end = .;
   }
-  . = 0x10000000 + 0x20000; /* Reserve 128KB for .data + .bss + stack */
+  . = 0x10000000 + 0x8000; /* Reserve 32KB for .data + .bss + stack */
   _stack_top = .;
 }

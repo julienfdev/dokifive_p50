@@ -5,7 +5,7 @@ module instruction_memory #(
     INITIAL = ""
 ) (
     input clk, rst, en,
-    input logic [18:0] addr,
+    input logic [13:0] addr,
     output logic [31:0] rdata
 );
 

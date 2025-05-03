@@ -57,7 +57,8 @@ module dokifive_p50_top(
 	//=======================================================
 	//  REG/WIRE declarations
 	//=======================================================
-	logic 			clk_div;
+	// Uncomment the following line to use the clock divider
+	// logic 			clk_div;
 	GPREGS_T 		GPREGS;
 	logic [6:0] 	seg0, seg1, seg2, seg3, seg4, seg5;
 
@@ -75,7 +76,7 @@ module dokifive_p50_top(
 	dokifive_soc #(
 	.INITIAL_INSTR("instr_init.mem")
 	) dokifive_soc_instance (
-		.clk(clk_div),
+		.clk(MAX10_CLK1_50),
 		.rst(~KEY[0]),
 		.GPREGS(GPREGS)
 	);
@@ -106,12 +107,13 @@ module dokifive_p50_top(
 		.segments(seg5)
 	);
 
-	clock_divider #(
-	.WIDTH(18)
-	) clock_divider_instance (
-		.clk(ADC_CLK_10),
-		.rst(~KEY[0]),
-		.div_clk(clk_div)
-	);
+	// Uncomment and assign clk_div to the SoC if needed
+	// clock_divider #(
+	// .WIDTH(18)
+	// ) clock_divider_instance (
+	// 	.clk(ADC_CLK_10),
+	// 	.rst(~KEY[0]),
+	// 	.div_clk(clk_div)
+	// );
 
 endmodule

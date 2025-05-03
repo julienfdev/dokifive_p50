@@ -31,6 +31,9 @@ Addresses outside these ranges return undefined or default values (e.g., 0xDEADB
 ## FPGA Integration (DE10-Lite)
 The top-level module (`DokiFive_p50_top`) instantiates the CPU and connects it to on-chip memory, SDRAM, and peripherals (LEDs, switches, 7-segment displays, VGA, Arduino headers). Pin assignments and I/O standards are defined in the Quartus `.qsf` file for the DE10-Lite board. The memory controller provides access to instruction and data memory, as well as memory-mapped I/O for peripherals.
 
+### Performance
+On standard DE10-Lite hardware, considering no peripheral constraints, the core can run at a calculated 55.72MHz, it's perfectly suited to use with the 50MHz clock.
+
 ## Simulation and Testing
 The `simulation/` folder contains ModelSim/Questa simulation project files, testbenches, and memory initialization files. The testbench (`tb_soc.sv`) simulates the SoC, including the CPU and memory system. You can run simulations to verify correct execution of RISC-V programs and observe CPU behavior.
 
